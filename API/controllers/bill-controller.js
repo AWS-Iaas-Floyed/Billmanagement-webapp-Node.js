@@ -11,6 +11,11 @@ exports.get = function (request, response) {
 
     const getBillsForUserResolve = (bills) => {
         response.status(200);
+
+        bills.forEach(function(part, index) {
+            this[index].categories = this[index].categories.split(", ");
+          }, bills); 
+
         response.json(bills);
     };
 
@@ -39,12 +44,19 @@ exports.getOne = function (request, response) {
     let requestedUser;
 
     const getBillsForUserResolve = (bills) => {
-        if (bills.length == 0)
+        if (bills.length == 0) {
             response.status(404);
-        else
+            response.json(bills);
+        } else if (bills[0].owner_id != requestedUser.id) {
+            response.status(401);
+            response.json({ message: "UnAuthorized" });
+        } else {
             response.status(200);
-
-        response.json(bills);
+            bills.forEach(function(part, index) {
+                this[index].categories = this[index].categories.split(", ");
+              }, bills); 
+            response.json(bills);
+        }
     };
 
     const validateGetOneResolve = () => {
@@ -79,6 +91,7 @@ exports.post = function (request, response) {
 
     const resolve = (bill) => {
         response.status(201);
+        bill.categories = bill.categories.split(", ");
         response.json(bill);
     };
 
@@ -116,19 +129,24 @@ exports.put = function (request, response) {
     };
 
     const resolveBillUpdateValidator = () => {
-        billService.update(request, response,requestedUser)
+        billService.update(request, response, requestedUser)
             .then(resolve)
             .catch(renderErrorResponse(response, 500));
     }
 
     const isMyBill = (bills) => {
-        if (bills.length == 0){
+
+        if (bills.length == 0) {
             response.status(404);
             response.json({
                 message: "Bill not found"
             });
-        } else
+        } else if (bills[0].owner_id != requestedUser.id) {
+            response.status(401);
+            response.json({ message: "UnAuthorized" });
+        } else {
             resolveBillUpdateValidator();
+        }
     };
 
 
@@ -159,19 +177,23 @@ exports.deleteOne = function (request, response) {
     };
 
     const resolveBillUpdateValidator = () => {
-        billService.delete(request, response,requestedUser)
+        billService.delete(request, response, requestedUser)
             .then(resolve)
             .catch(renderErrorResponse(response, 500));
     }
 
     const isMyBill = (bills) => {
-        if (bills.length == 0){
+        if (bills.length == 0) {
             response.status(404);
             response.json({
                 message: "Bill not found"
             });
-        } else
+        } else if (bills[0].owner_id != requestedUser.id) {
+            response.status(401);
+            response.json({ message: "UnAuthorized" });
+        } else {
             resolveBillUpdateValidator();
+        }
     };
 
 

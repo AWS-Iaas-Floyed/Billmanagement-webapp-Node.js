@@ -76,11 +76,17 @@ exports.billCreateValidator = function (request, response) {
         return Promise.reject();
     }
 
-    if (!parseFloat(Number(request.body.amount_due))) {
+    if (
+        !parseFloat(Number(request.body.amount_due))
+        || parseFloat(Number(request.body.amount_due)) < 0.01
+    ) {
         return Promise.reject();
     }
 
-    if (!Array.isArray(request.body.categories) || request.body.categories.length <= 0) {
+    if (!Array.isArray(request.body.categories) 
+        || request.body.categories.length <= 0
+        || (new Set(request.body.categories)).size !== request.body.categories.length
+        ) {
         return Promise.reject();
     }
 
@@ -101,7 +107,7 @@ exports.billGetValidator = function (request, response) {
 }
 
 exports.getBillsForUser = function (request, response, requestedUser) {
-    
+
     return Bill.findAll({
         where: {
             owner_id: requestedUser.id
@@ -111,10 +117,9 @@ exports.getBillsForUser = function (request, response, requestedUser) {
 }
 
 exports.getOneBillsForUser = function (request, response, requestedUser) {
-    
+
     return Bill.findAll({
         where: {
-            owner_id: requestedUser.id,
             id: request.params.billId
         }
     });
@@ -124,12 +129,11 @@ exports.getOneBillsForUser = function (request, response, requestedUser) {
 
 exports.validateGetOne = function () {
 
-   return Promise.resolve(); 
+    return Promise.resolve();
 
 }
 
-exports.billUpdateValidator = function(request, response, requestedUser) 
-{
+exports.billUpdateValidator = function (request, response, requestedUser) {
 
     if (request.body.vendor === undefined
         || request.body.bill_date === undefined
@@ -142,11 +146,17 @@ exports.billUpdateValidator = function(request, response, requestedUser)
         return Promise.reject();
     }
 
-    if (!parseFloat(Number(request.body.amount_due))) {
+    if (
+        !parseFloat(Number(request.body.amount_due))
+        || parseFloat(Number(request.body.amount_due)) < 0.01
+    ) {
         return Promise.reject();
     }
 
-    if (!Array.isArray(request.body.categories) || request.body.categories.length <= 0) {
+    if (!Array.isArray(request.body.categories) 
+        || request.body.categories.length <= 0
+        || (new Set(request.body.categories)).size !== request.body.categories.length
+        ) {
         return Promise.reject();
     }
 
@@ -165,7 +175,6 @@ exports.billUpdateValidator = function(request, response, requestedUser)
 exports.isMyBill = function (request, response, requestedUser) {
     return Bill.findAll({
         where: {
-            owner_id: requestedUser.id,
             id: request.params.billId
         }
     });
