@@ -114,7 +114,6 @@ exports.getOneBillsForUser = function (request, response, requestedUser) {
     
     return Bill.findAll({
         where: {
-            owner_id: requestedUser.id,
             id: request.params.billId
         }
     });
@@ -165,7 +164,6 @@ exports.billUpdateValidator = function(request, response, requestedUser)
 exports.isMyBill = function (request, response, requestedUser) {
     return Bill.findAll({
         where: {
-            owner_id: requestedUser.id,
             id: request.params.billId
         }
     });
