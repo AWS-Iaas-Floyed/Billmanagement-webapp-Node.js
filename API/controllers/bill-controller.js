@@ -11,6 +11,11 @@ exports.get = function (request, response) {
 
     const getBillsForUserResolve = (bills) => {
         response.status(200);
+
+        bills.forEach(function(part, index) {
+            this[index].categories = this[index].categories.split(", ");
+          }, bills); 
+
         response.json(bills);
     };
 
@@ -47,6 +52,9 @@ exports.getOne = function (request, response) {
             response.json({ message: "UnAuthorized" });
         } else {
             response.status(200);
+            bills.forEach(function(part, index) {
+                this[index].categories = this[index].categories.split(", ");
+              }, bills); 
             response.json(bills);
         }
     };
@@ -83,6 +91,7 @@ exports.post = function (request, response) {
 
     const resolve = (bill) => {
         response.status(201);
+        bill.categories = bill.categories.split(", ");
         response.json(bill);
     };
 
