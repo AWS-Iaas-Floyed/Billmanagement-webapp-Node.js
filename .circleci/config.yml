@@ -1,0 +1,45 @@
+version: 2
+jobs:
+  pr_check:
+    docker:
+      - image: circleci/node:10.16.3
+    steps:
+      - run:
+          name: Install npm command
+          command: 'npm install'
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+      - save_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          name: Starting node
+          command: 'npm test'
+  build:
+    docker:
+      - image: circleci/node:10.16.3
+    steps:
+      - run:
+          name: Install npm command
+          command: 'npm install'
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+      - save_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          name: Starting node
+          command: 'npm test'      
+workflows:
+  version: 2
+  pr-check:
+    jobs:
+    - pr_check 
+  build_deploy:
+    jobs:
+    - build:
+        filters:
+          branches:
+            only: master
