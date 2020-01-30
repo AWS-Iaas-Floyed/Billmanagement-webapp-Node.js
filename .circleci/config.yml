@@ -32,7 +32,7 @@ jobs:
 #           paths:
 #             - ./node_modules
       - run:
-          name: Starting node
+          name: Starting node test
           command: 'npm test'      
 workflows:
   version: 2
