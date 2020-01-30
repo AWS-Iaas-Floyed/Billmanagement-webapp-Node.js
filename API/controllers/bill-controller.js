@@ -39,12 +39,16 @@ exports.getOne = function (request, response) {
     let requestedUser;
 
     const getBillsForUserResolve = (bills) => {
-        if (bills.length == 0)
+        if (bills.length == 0) {
             response.status(404);
-        else
+            response.json(bills);
+        } else if (bills[0].owner_id != requestedUser.id) {
+            response.status(401);
+            response.json({ message: "UnAuthorized" });
+        } else {
             response.status(200);
-
-        response.json(bills);
+            response.json(bills);
+        }
     };
 
     const validateGetOneResolve = () => {
@@ -116,19 +120,24 @@ exports.put = function (request, response) {
     };
 
     const resolveBillUpdateValidator = () => {
-        billService.update(request, response,requestedUser)
+        billService.update(request, response, requestedUser)
             .then(resolve)
             .catch(renderErrorResponse(response, 500));
     }
 
     const isMyBill = (bills) => {
-        if (bills.length == 0){
+
+        if (bills.length == 0) {
             response.status(404);
             response.json({
                 message: "Bill not found"
             });
-        } else
+        } else if (bills[0].owner_id != requestedUser.id) {
+            response.status(401);
+            response.json({ message: "UnAuthorized" });
+        } else {
             resolveBillUpdateValidator();
+        }
     };
 
 
@@ -159,19 +168,23 @@ exports.deleteOne = function (request, response) {
     };
 
     const resolveBillUpdateValidator = () => {
-        billService.delete(request, response,requestedUser)
+        billService.delete(request, response, requestedUser)
             .then(resolve)
             .catch(renderErrorResponse(response, 500));
     }
 
     const isMyBill = (bills) => {
-        if (bills.length == 0){
+        if (bills.length == 0) {
             response.status(404);
             response.json({
                 message: "Bill not found"
             });
-        } else
+        } else if (bills[0].owner_id != requestedUser.id) {
+            response.status(401);
+            response.json({ message: "UnAuthorized" });
+        } else {
             resolveBillUpdateValidator();
+        }
     };
 
 
