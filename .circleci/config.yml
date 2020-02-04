@@ -7,20 +7,26 @@ jobs:
       - checkout
       - run:
           name: Install npm command
-          command: 'npm --version'
+          command: 'npm install'
+      - run:
+          name: Starting node
+          command: 'npm test'
   build:
     docker:
       - image: circleci/node:10.16.3
     steps:
       - checkout
       - run:
-          name: Install npm command
-          command: 'npm --version'
+          name: Install NPM
+          command: 'npm install'
+      - run:
+          name: Starting node test
+          command: 'npm test'
 workflows:
   version: 2
   pr-check:
     jobs:
-    - pr_check 
+    - pr_check
   build_deploy:
     jobs:
     - build:
