@@ -1,5 +1,8 @@
-version: 2
+# Use the latest 2.1 version of CircleCI pipeline process engine. See: https://circleci.com/docs/2.0/configuration-reference
+version: 2.1
+# Use a package of configuration called an orb.
 jobs:
+  # Declare a dependency on the welcome-orb
   pr_check:
     docker:
       - image: circleci/node:10.16.3
@@ -8,40 +11,10 @@ jobs:
       - run:
           name: Install npm command
           command: 'npm install'
-#       - restore_cache:
-#           key: dependency-cache-{{ checksum "package-lock.json" }}
-#       - save_cache:
-#           key: dependency-cache-{{ checksum "package-lock.json" }}
-#           paths:
-#             - ./node_modules
-      - run:
-          name: Starting node
-          command: 'npm test'
-  build:
-    docker:
-      - image: circleci/node:10.16.3
-    steps:
-      - checkout
-      - run:
-          name: Install NPM
-          command: 'npm install'
-#       - restore_cache:
-#           key: dependency-cache-{{ checksum "package-lock.json" }}
-#       - save_cache:
-#           key: dependency-cache-{{ checksum "package-lock.json" }}
-#           paths:
-#             - ./node_modules
-      - run:
-          name: Starting node test
-          command: 'npm test'      
+# Orchestrate or schedule a set of jobs
 workflows:
-  version: 2
+  # Name the workflow "welcome"
   pr-check:
+    # Run the welcome/run job in its own container
     jobs:
-    - pr_check 
-  build_deploy:
-    jobs:
-    - build:
-        filters:
-          branches:
-            only: master
+      - pr_check
