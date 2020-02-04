@@ -9,9 +9,3 @@ Test the application using `npm test`
 Port number will be based on the environment variable : EXPRESS_PORT or 3000 by default
 
 You can access the app at [http://localhost:3000/](http://localhost:3000/).
-
-<<<<<<< HEAD
-Hello World!
-=======
-Hello World! 
->>>>>>> 0bdae4b2f023ce95b1b88a62733fa06522871bfb
