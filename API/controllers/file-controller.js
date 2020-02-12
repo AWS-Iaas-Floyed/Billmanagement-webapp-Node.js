@@ -3,18 +3,7 @@ const billService = require('../services/bill-service');
 
 const userService = require('../services/user-service');
 
-var multer = require('multer')
 
-var storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, './serveruploads/')
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.fieldname + '-' + Date.now())
-    }
-})
-
-var upload = multer({ storage: storage })
 
 
 /**
@@ -22,83 +11,33 @@ var upload = multer({ storage: storage })
  */
 exports.post = function (request, response, next) {
 
-    let requestedUser, url, fileName;
+    let requestedUser, requestedBill;
 
-    const resolve = (bill) => {
+    const resolve = (file) => {
         response.status(201);
-        response.json(bill);
+        response.json(file);
     };
 
-    const resolveFileCreateValidator = () => {
-
-        // fileName = fileService.getFileName();
-
-        // let url = process.cwd()+'/uploads/' + fileName;
+    const saveFile = () => {
 
         fileService.save(request, response, url, url)
             .then(resolve)
             .catch(renderErrorResponse(response, 500));
     };
 
-    const credentialResolve = () => {
-
-        fileService.fileCreateValidator(request, response)
-            .then(resolveFileCreateValidator)
-            .catch(renderErrorResponse(response, 400, "Incorrect paramters"));
+    const validateFile = (file) => {
+        if (file.length != 0) {
+            response.status(400);
+            response.json({ message: "File already exists for bill" });
+        } else {
+            saveFile();
+        }
     };
 
-    userService.validateCredentials(request, response)
-        .then((user) => {
-            requestedUser = user;
-            credentialResolve();
-        })
-        .catch(renderErrorResponse(response, 401, "Invalid user credentials"));
-
-};
-
-/**
- * Listing the bill information
- */
-exports.get = function (request, response) {
-
-    let requestedUser;
-
-    const getBillsForUserResolve = (bills) => {
-        response.status(200);
-
-        bills.forEach(function (part, index) {
-            this[index].categories = this[index].categories.split(", ");
-        }, bills);
-
-        response.json(bills);
-    };
-
-
-    const credentialResolve = () => {
-        fileService.getBillsForUser(request, response, requestedUser)
-            .then(getBillsForUserResolve)
+    const getFile = () => {
+        fileService.getFileForBill(request, response)
+            .then(validateFile)
             .catch(renderErrorResponse(response, 500));
-    }
-
-    userService.validateCredentials(request, response)
-        .then((user) => {
-            requestedUser = user;
-            credentialResolve();
-        })
-        .catch(renderErrorResponse(response, 401, "Invalid user credentials"));
-
-};
-
-
-/**
- * Listing the bill information
- */
-exports.getOne = function (request, response) {
-
-    let requestedUser, requestedBill, requestedFile;
-
-    const billValidate = () => {
-        
     }
 
     const getBillsForUserResolve = (bills) => {
@@ -110,12 +49,72 @@ exports.getOne = function (request, response) {
             response.json({ message: "UnAuthorized" });
         } else {
             requestedBill = bills[0];
-            billValidate();
+            getFile();
         }
     };
 
     const validateGetOneResolve = () => {
-        fileService.getOneBillsForUser(request, response, requestedUser)
+        billService.getOneBillsForUser(request, response, requestedUser)
+            .then(getBillsForUserResolve)
+            .catch(renderErrorResponse(response, 500));
+    }
+
+    userService.validateCredentials(request, response)
+        .then((user) => {
+            requestedUser = user;
+            validateGetOneResolve();
+        })
+        .catch(renderErrorResponse(response, 401, "Invalid user credentials"));
+
+
+
+};
+
+
+/**
+ * Getting a particular file
+ */
+exports.getOne = function (request, response) {
+
+    let requestedUser, requestedBill;
+
+    const validateFileAndBill = (file) => {
+        if (file.length == 0) {
+            response.status(404);
+            response.json(file);
+        } else if(file[0].owner_id != requestedBill.owner_id){
+            response.status(401);
+            response.json({ message: "UnAuthorized" });
+        } else if (file[0].bill_id != requestedBill.id) {
+            response.status(400);
+            response.json({ message: "Invalid file" });
+        }  else {
+            response.status(200);
+            response.json(file);
+        }
+    };
+
+    const getFile = () => {
+        fileService.getOneFile(request, response)
+            .then(validateFileAndBill)
+            .catch(renderErrorResponse(response, 500));
+    }
+
+    const getBillsForUserResolve = (bills) => {
+        if (bills.length == 0) {
+            response.status(404);
+            response.json(bills);
+        } else if (bills[0].owner_id != requestedUser.id) {
+            response.status(401);
+            response.json({ message: "UnAuthorized" });
+        } else {
+            requestedBill = bills[0];
+            getFile();
+        }
+    };
+
+    const validateGetOneResolve = () => {
+        billService.getOneBillsForUser(request, response, requestedUser)
             .then(getBillsForUserResolve)
             .catch(renderErrorResponse(response, 500));
     }
@@ -130,100 +129,69 @@ exports.getOne = function (request, response) {
 };
 
 
-/**
- * updating based on id
- */
-exports.put = function (request, response) {
-
-    let requestedUser;
-
-    const resolve = () => {
-        response.status(200);
-        response.json({});
-    };
-
-    const resolveBillUpdateValidator = () => {
-        fileService.update(request, response, requestedUser)
-            .then(resolve)
-            .catch(renderErrorResponse(response, 500));
-    }
-
-    const isMyBill = (bills) => {
-
-        if (bills.length == 0) {
-            response.status(404);
-            response.json({
-                message: "Bill not found"
-            });
-        } else if (bills[0].owner_id != requestedUser.id) {
-            response.status(401);
-            response.json({ message: "UnAuthorized" });
-        } else {
-            resolveBillUpdateValidator();
-        }
-    };
-
-
-    const credentialResolve = () => {
-        fileService.billUpdateValidator(request, response, requestedUser)
-            .then(isMyBill)
-            .catch(renderErrorResponse(response, 400, "Bad request"));
-    }
-
-
-    userService.validateCredentials(request, response)
-        .then((user) => {
-            requestedUser = user;
-            credentialResolve();
-        })
-        .catch(renderErrorResponse(response, 401, "Invalid user credentials"));
-
-};
-
-
 exports.deleteOne = function (request, response) {
 
-    let requestedUser;
+ 
+    let requestedUser, requestedBill;
 
     const resolve = () => {
         response.status(204);
         response.json({});
     };
 
-    const resolveBillUpdateValidator = () => {
-        fileService.delete(request, response, requestedUser)
+    const deleteFile = () => {
+        fileService.deleteOne(request, response)
             .then(resolve)
+            .catch(renderErrorResponse(response, 500));
+    };
+
+    const validateFileAndBill = (file) => {
+        if (file.length == 0) {
+            response.status(404);
+            response.json(file);
+        } else if(file[0].owner_id != requestedBill.owner_id){
+            response.status(401);
+            response.json({ message: "UnAuthorized" });
+        } else if (file[0].bill_id != requestedBill.id) {
+            response.status(400);
+            response.json({ message: "Invalid file" });
+        }  else {
+            deleteFile();
+        }
+    };
+
+    const getFile = () => {
+        fileService.getOneFile(request, response)
+            .then(validateFileAndBill)
             .catch(renderErrorResponse(response, 500));
     }
 
-    const isMyBill = (bills) => {
+    const getBillsForUserResolve = (bills) => {
         if (bills.length == 0) {
             response.status(404);
-            response.json({
-                message: "Bill not found"
-            });
+            response.json(bills);
         } else if (bills[0].owner_id != requestedUser.id) {
             response.status(401);
             response.json({ message: "UnAuthorized" });
         } else {
-            resolveBillUpdateValidator();
+            requestedBill = bills[0];
+            getFile();
         }
     };
 
-
-    const credentialResolve = () => {
-        fileService.isMyBill(request, response, requestedUser)
-            .then(isMyBill)
-            .catch(renderErrorResponse(response, 400, "Bad request"));
+    const validateGetOneResolve = () => {
+        billService.getOneBillsForUser(request, response, requestedUser)
+            .then(getBillsForUserResolve)
+            .catch(renderErrorResponse(response, 500));
     }
-
 
     userService.validateCredentials(request, response)
         .then((user) => {
             requestedUser = user;
-            credentialResolve();
+            validateGetOneResolve();
         })
         .catch(renderErrorResponse(response, 401, "Invalid user credentials"));
+
 
 };
 

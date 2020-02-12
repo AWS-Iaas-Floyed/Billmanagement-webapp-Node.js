@@ -19,6 +19,9 @@ const file = db.define( 'file', {
     },
     bill_id: {
         type: Sequelize.STRING
+    },
+    owner_id: {
+        type: Sequelize.STRING
     }
 },{
     freezeTableName: true,

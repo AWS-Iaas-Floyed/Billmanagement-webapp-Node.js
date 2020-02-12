@@ -4,57 +4,33 @@ const bcrypt = require('bcrypt');
 const File = require('../models/file');
 var emailValidator = require("email-validator");
 var auth = require('basic-auth');
-const multer = require('multer');
 
 
-var formidable = require('formidable');
+var multer = require('multer')
 
-var fs = require('fs');
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './serveruploads/')
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.fieldname + '-' + Date.now())
+    }
+})
 
-let upload;
+var upload = multer({
+    storage: storage, fileFilter: function (req, file, cb) {
+        if (file.mimetype == 'image/png' || file.mimetype == 'image/jpg' || file.mimetype == 'image/jpeg')
+            return cb(null, true);
+        else
+            return cb(new Error('Unsupported File Format'), false);
+    }
+});
 
-exports.getFileName = function(request, response){
-
-    let form = new formidable.IncomingForm();
-
-    form.parse(request, function (err, fields, files) {
-        return files.file.name;
-    });
-};
 
 exports.fileCreateValidator = function (request, response) {
 
-    // let form = new formidable.IncomingForm();
-    
-    // let fileName, url;
+    if (req.file.contentType == 'image/jpeg' || req.file.contentType == 'image/png' || req.file.contentType == 'image/jpg' || req.file.mimetype == 'image/jpeg' || req.file.mimetype == 'image/jpg' || req.file.mimetype == 'image/png') {
 
-    // form.parse(request, function (err, fields, files) {
-
-    //     fileName = files.file.name;
-    //     url = process.cwd()+'/uploads/' + files.file.name;
-
-    //     console.log(fileName + "<-->" + url);
-
-    // });
-
-    // return Promise.all([Promise.resolve(), url]);
-
-    let storage = multer.diskStorage({
-        destination: (req, file, cb) => {
-            cb(null, '/home/floyed/FP/Projects/Cloud/Assignments/Assignment4/webapp/upload');
-        },
-        filename: (req, file, cb) => {
-            cb(null, file.originalname);
-        }
-    });
-    upload = multer({
-        storage: storage, fileFilter: function (req, file, cb) {
-            if (file.mimetype == 'image/png' || file.mimetype == 'image/jpg' || file.mimetype == 'image/jpeg')
-                return cb(null, true);
-            else
-                return cb(new Error('Unsupported File Format'), false);
-        }
-    });
 
     return Promise.resolve();    
 }
@@ -63,6 +39,8 @@ exports.fileCreateValidator = function (request, response) {
  * Saving the new File
  */
 exports.save = function (request, response, file_name, url) {
+
+
 
     const promise = File.create({
         file_name: file_name,
@@ -101,12 +79,11 @@ exports.update = function (request, response, requestedUser) {
 
 
 
-exports.delete = function (request, response, requestedUser) {
+exports.deleteOne = function (request, response, requestedUser) {
 
     const promise = File.destroy({
         where: {
-            owner_id: requestedUser.id,
-            id: request.params.billId
+            id: request.params.fileId
         }
     });
 
@@ -130,11 +107,21 @@ exports.getBillsForUser = function (request, response, requestedUser) {
 
 }
 
-exports.getOneBillsForUser = function (request, response, requestedUser) {
+exports.getOneFile = function (request, response) {
 
     return File.findAll({
         where: {
-            id: request.params.billId
+            id: request.params.fileId
+        }
+    });
+
+}
+
+exports.getFileForBill = function (request, response) {
+
+    return File.findAll({
+        where: {
+            bill_id: request.params.billId
         }
     });
 
