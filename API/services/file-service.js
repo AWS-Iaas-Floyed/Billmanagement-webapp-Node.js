@@ -9,7 +9,7 @@ var multer = require('multer');
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, '/home/floyed/FP/Projects/Cloud/temp/uploads')
+        cb(null, '~/uploads')
     },
     filename: function (req, file, cb) {
         cb(null, file.originalname

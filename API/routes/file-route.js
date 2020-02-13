@@ -1,5 +1,5 @@
 var multer = require('multer')
-var upload = multer({ dest: '/home/floyed/FP/Projects/Cloud/temp/uploads/' })
+var upload = multer({ dest: '~/uploads/' })
 
 module.exports = function (app) {
     const fileController = require('../controllers/file-controller');
