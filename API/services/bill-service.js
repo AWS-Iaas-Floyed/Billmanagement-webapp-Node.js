@@ -2,6 +2,7 @@
 
 const bcrypt = require('bcrypt');
 const Bill = require('../models/bill');
+const File = require('../models/file');
 var emailValidator = require("email-validator");
 var auth = require('basic-auth');
 
@@ -52,14 +53,20 @@ exports.update = function (request, response, requestedUser) {
 
 exports.delete = function (request, response, requestedUser) {
 
-    const promise = Bill.destroy({
+    const billPromise = Bill.destroy({
         where: {
             owner_id: requestedUser.id,
             id: request.params.billId
         }
     });
 
-    return promise;
+    const filePromise = File.destroy({
+        where: {
+            bill_id: request.params.billId
+        }
+    });
+
+    return Promise.all([billPromise, filePromise]);
 };
 
 
@@ -116,7 +123,7 @@ exports.getBillsForUser = function (request, response, requestedUser) {
 
 }
 
-exports.getOneBillsForUser = function (request, response, requestedUser) {
+exports.getOneBillForUser = function (request, response, requestedUser) {
 
     return Bill.findAll({
         where: {

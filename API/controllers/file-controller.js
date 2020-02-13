@@ -20,18 +20,15 @@ exports.post = function (request, response, next) {
 
     const saveFile = () => {
 
-        fileService.save(request, response, url, url)
+        fileService.save(request, response, requestedBill, requestedUser)
             .then(resolve)
             .catch(renderErrorResponse(response, 500));
     };
 
     const validateFile = (file) => {
-        if (file.length != 0) {
-            response.status(400);
-            response.json({ message: "File already exists for bill" });
-        } else {
-            saveFile();
-        }
+        fileService.fileCreateValidator(request, response, file)
+            .then(saveFile)
+            .catch(renderNothing);
     };
 
     const getFile = () => {
@@ -43,7 +40,7 @@ exports.post = function (request, response, next) {
     const getBillsForUserResolve = (bills) => {
         if (bills.length == 0) {
             response.status(404);
-            response.json(bills);
+            response.json({ message: "Bill does not exist" });
         } else if (bills[0].owner_id != requestedUser.id) {
             response.status(401);
             response.json({ message: "UnAuthorized" });
@@ -54,7 +51,7 @@ exports.post = function (request, response, next) {
     };
 
     const validateGetOneResolve = () => {
-        billService.getOneBillsForUser(request, response, requestedUser)
+        billService.getOneBillForUser(request, response, requestedUser)
             .then(getBillsForUserResolve)
             .catch(renderErrorResponse(response, 500));
     }
@@ -65,8 +62,6 @@ exports.post = function (request, response, next) {
             validateGetOneResolve();
         })
         .catch(renderErrorResponse(response, 401, "Invalid user credentials"));
-
-
 
 };
 
@@ -114,7 +109,7 @@ exports.getOne = function (request, response) {
     };
 
     const validateGetOneResolve = () => {
-        billService.getOneBillsForUser(request, response, requestedUser)
+        billService.getOneBillForUser(request, response, requestedUser)
             .then(getBillsForUserResolve)
             .catch(renderErrorResponse(response, 500));
     }
@@ -180,7 +175,7 @@ exports.deleteOne = function (request, response) {
     };
 
     const validateGetOneResolve = () => {
-        billService.getOneBillsForUser(request, response, requestedUser)
+        billService.getOneBillForUser(request, response, requestedUser)
             .then(getBillsForUserResolve)
             .catch(renderErrorResponse(response, 500));
     }
@@ -218,6 +213,14 @@ let renderErrorResponse = (response, code, message) => {
                 message: message ? message : ""
             });
         }
+    }
+    return errorCallback;
+};
+
+let renderNothing = () => {
+
+    const errorCallback = (error) => {
+        console.log(error);
     }
     return errorCallback;
 };

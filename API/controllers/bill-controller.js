@@ -60,7 +60,7 @@ exports.getOne = function (request, response) {
     };
 
     const validateGetOneResolve = () => {
-        billService.getOneBillsForUser(request, response, requestedUser)
+        billService.getOneBillForUser(request, response, requestedUser)
             .then(getBillsForUserResolve)
             .catch(renderErrorResponse(response, 500));
     }
