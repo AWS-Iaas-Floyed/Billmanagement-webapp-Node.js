@@ -44,3 +44,5 @@ module.exports = server;
 
 console.log('User login app started Successfully');
 console.log('User login app for RESTful API server started on: ' + port);
+console.log(process.cwd());
+console.log(new Date().toISOString().split('T')[0]);

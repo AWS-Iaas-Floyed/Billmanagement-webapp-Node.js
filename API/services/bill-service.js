@@ -2,6 +2,7 @@
 
 const bcrypt = require('bcrypt');
 const Bill = require('../models/bill');
+const File = require('../models/file');
 var emailValidator = require("email-validator");
 var auth = require('basic-auth');
 
@@ -52,14 +53,20 @@ exports.update = function (request, response, requestedUser) {
 
 exports.delete = function (request, response, requestedUser) {
 
-    const promise = Bill.destroy({
+    const billPromise = Bill.destroy({
         where: {
             owner_id: requestedUser.id,
             id: request.params.billId
         }
     });
 
-    return promise;
+    const filePromise = File.destroy({
+        where: {
+            bill_id: request.params.billId
+        }
+    });
+
+    return Promise.all([billPromise, filePromises]);
 };
 
 
@@ -83,10 +90,10 @@ exports.billCreateValidator = function (request, response) {
         return Promise.reject();
     }
 
-    if (!Array.isArray(request.body.categories) 
+    if (!Array.isArray(request.body.categories)
         || request.body.categories.length <= 0
         || (new Set(request.body.categories)).size !== request.body.categories.length
-        ) {
+    ) {
         return Promise.reject();
     }
 
@@ -116,12 +123,18 @@ exports.getBillsForUser = function (request, response, requestedUser) {
 
 }
 
-exports.getOneBillsForUser = function (request, response, requestedUser) {
+exports.getOneBillForUser = function (request, response, requestedUser) {
+
+    // Bill.hasOne(File, { sourceKey: 'id' })
+    // File.belongsTo(Bill, { sourceKey: 'bill_id' } )
 
     return Bill.findAll({
         where: {
             id: request.params.billId
         }
+        // ,include: [{
+        //     model: File
+        // }]
     });
 
 }
@@ -153,10 +166,10 @@ exports.billUpdateValidator = function (request, response, requestedUser) {
         return Promise.reject();
     }
 
-    if (!Array.isArray(request.body.categories) 
+    if (!Array.isArray(request.body.categories)
         || request.body.categories.length <= 0
         || (new Set(request.body.categories)).size !== request.body.categories.length
-        ) {
+    ) {
         return Promise.reject();
     }
 
