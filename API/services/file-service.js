@@ -5,7 +5,6 @@ const File = require('../models/file');
 var emailValidator = require("email-validator");
 var auth = require('basic-auth');
 
-
 var multer = require('multer');
 
 var storage = multer.diskStorage({
@@ -13,7 +12,9 @@ var storage = multer.diskStorage({
         cb(null, '/home/floyed/FP/Projects/Cloud/temp/uploads')
     },
     filename: function (req, file, cb) {
-        cb(null, file.filename + '-' + Date.now())
+        cb(null, file.originalname
+            //  + '-' + Date.now()
+             )
     }
 });
 

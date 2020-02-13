@@ -66,7 +66,7 @@ exports.delete = function (request, response, requestedUser) {
         }
     });
 
-    return Promise.all([billPromise, filePromise]);
+    return Promise.all([billPromise, filePromises]);
 };
 
 
@@ -90,10 +90,10 @@ exports.billCreateValidator = function (request, response) {
         return Promise.reject();
     }
 
-    if (!Array.isArray(request.body.categories) 
+    if (!Array.isArray(request.body.categories)
         || request.body.categories.length <= 0
         || (new Set(request.body.categories)).size !== request.body.categories.length
-        ) {
+    ) {
         return Promise.reject();
     }
 
@@ -125,10 +125,16 @@ exports.getBillsForUser = function (request, response, requestedUser) {
 
 exports.getOneBillForUser = function (request, response, requestedUser) {
 
+    // Bill.hasOne(File, { sourceKey: 'id' })
+    // File.belongsTo(Bill, { sourceKey: 'bill_id' } )
+
     return Bill.findAll({
         where: {
             id: request.params.billId
         }
+        // ,include: [{
+        //     model: File
+        // }]
     });
 
 }
@@ -160,10 +166,10 @@ exports.billUpdateValidator = function (request, response, requestedUser) {
         return Promise.reject();
     }
 
-    if (!Array.isArray(request.body.categories) 
+    if (!Array.isArray(request.body.categories)
         || request.body.categories.length <= 0
         || (new Set(request.body.categories)).size !== request.body.categories.length
-        ) {
+    ) {
         return Promise.reject();
     }
 

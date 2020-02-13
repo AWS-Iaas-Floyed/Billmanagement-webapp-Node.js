@@ -1,13 +1,14 @@
 const Sequelize = require('sequelize');
 const db = require('../config/database');
+const Bill = require('./bill');
 
-const file = db.define( 'file', {
+const file = db.define('file', {
     id: {
         primaryKey: true,
         allowNull: false,
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4
-    },   
+    },
     file_name: {
         type: Sequelize.STRING
     },
@@ -23,11 +24,12 @@ const file = db.define( 'file', {
     owner_id: {
         type: Sequelize.STRING
     }
-},{
+}, {
     freezeTableName: true,
     timestamps: false
-});
+},
+);
 
-module.exports = file;  
+module.exports = file;
 
 
