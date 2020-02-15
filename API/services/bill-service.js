@@ -1,10 +1,10 @@
 'use strict';
 
-const bcrypt = require('bcrypt');
 const Bill = require('../models/bill');
+const Sequelize = require('sequelize');
+const db = require('../config/database');
+
 const File = require('../models/file');
-var emailValidator = require("email-validator");
-var auth = require('basic-auth');
 
 
 /**
@@ -53,6 +53,12 @@ exports.update = function (request, response, requestedUser) {
 
 exports.delete = function (request, response, requestedUser) {
 
+    const filePromise = File.destroy({
+        where: {
+            billId: request.params.billId
+        }
+    });
+
     const billPromise = Bill.destroy({
         where: {
             owner_id: requestedUser.id,
@@ -60,13 +66,8 @@ exports.delete = function (request, response, requestedUser) {
         }
     });
 
-    const filePromise = File.destroy({
-        where: {
-            bill_id: request.params.billId
-        }
-    });
 
-    return Promise.all([billPromise, filePromises]);
+    return Promise.all([filePromise, billPromise]);
 };
 
 
@@ -120,23 +121,80 @@ exports.getBillsForUser = function (request, response, requestedUser) {
             owner_id: requestedUser.id
         }
     });
+}
+
+exports.getBillsWithFilesForUser = function (request, response, requestedUser) {
+
+    let query = "SELECT b.*,f.id as fileId, f.file_name, f.url, f.upload_date FROM bill b "
+        + "left join file f on f.billId = b.id "
+        + "where b.owner_id = \"" + requestedUser.id + "\" ";
+
+    return db.query(query
+        , {
+            type: Sequelize.QueryTypes.SELECT
+        });
 
 }
 
 exports.getOneBillForUser = function (request, response, requestedUser) {
 
-    // Bill.hasOne(File, { sourceKey: 'id' })
-    // File.belongsTo(Bill, { sourceKey: 'bill_id' } )
-
     return Bill.findAll({
         where: {
             id: request.params.billId
         }
-        // ,include: [{
-        //     model: File
-        // }]
     });
+}
 
+exports.getBillWithFile = function (request, response, requestedUser) {
+
+    let query = "SELECT b.*,f.id as fileId, f.file_name, f.url, f.upload_date FROM bill b "
+        + "left join file f on f.billId = b.id "
+        + "where b.id = \"" + request.params.billId + "\" ";
+
+    return db.query(query
+        , {
+            type: Sequelize.QueryTypes.SELECT
+        });
+
+}
+
+let formatBill = (current) => {
+    
+    current.attachments = {};
+
+    if (current.file_name && current.file_name != undefined && current.file_name != null) {
+        current.attachments.file_name = current.file_name;
+    }
+    current.file_name = undefined;
+
+    if (current.url && current.url != undefined && current.url != null) {
+        current.attachments.url = current.url;
+    }
+    current.url = undefined;
+
+    if (current.upload_date && current.upload_date != undefined && current.upload_date != null) {
+        current.attachments.upload_date = current.upload_date;
+    }
+    current.upload_date = undefined;
+
+    if (current.fileId && current.fileId != undefined && current.fileId != null) {
+        current.attachments.id = current.fileId;
+    }
+    current.fileId = undefined;
+
+    current.categories = current.categories.split(", ");
+}
+
+exports.formatSingleBill = function (current) {
+
+    formatBill(current);
+}
+
+exports.formatFileInfoInBill = function (bills) {
+
+    bills.forEach(function (part, index) {
+        formatBill(this[index]);
+    }, bills);
 }
 
 

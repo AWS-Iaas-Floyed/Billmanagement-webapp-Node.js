@@ -1,6 +1,8 @@
 const Sequelize = require('sequelize');
 const db = require('../config/database');
 
+const file = require('./file');
+
 const bill = db.define( 'bill', {
     id: {
         primaryKey: true,
@@ -42,4 +44,6 @@ const bill = db.define( 'bill', {
 
 module.exports = bill;  
 
+// bill.belongsTo(file, {foreignKey: 'fileId'});
+file.belongsTo(bill, {foreignKey: 'billId'});
 

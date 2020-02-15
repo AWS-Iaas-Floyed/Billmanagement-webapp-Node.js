@@ -76,11 +76,11 @@ exports.getOne = function (request, response) {
     const validateFileAndBill = (file) => {
         if (file.length == 0) {
             response.status(404);
-            response.json(file);
+            response.json({ message: "File not found" });
         } else if(file[0].owner_id != requestedBill.owner_id){
             response.status(401);
             response.json({ message: "UnAuthorized" });
-        } else if (file[0].bill_id != requestedBill.id) {
+        } else if (file[0].billId != requestedBill.id) {
             response.status(400);
             response.json({ message: "Invalid file" });
         }  else {
@@ -98,7 +98,7 @@ exports.getOne = function (request, response) {
     const getBillsForUserResolve = (bills) => {
         if (bills.length == 0) {
             response.status(404);
-            response.json(bills);
+            response.json({ message: "Bill not found" });
         } else if (bills[0].owner_id != requestedUser.id) {
             response.status(401);
             response.json({ message: "UnAuthorized" });
@@ -143,11 +143,11 @@ exports.deleteOne = function (request, response) {
     const validateFileAndBill = (file) => {
         if (file.length == 0) {
             response.status(404);
-            response.json(file);
+            response.json({ message: "File not found" });
         } else if(file[0].owner_id != requestedBill.owner_id){
             response.status(401);
             response.json({ message: "UnAuthorized" });
-        } else if (file[0].bill_id != requestedBill.id) {
+        } else if (file[0].billId != requestedBill.id) {
             response.status(400);
             response.json({ message: "Invalid file" });
         }  else {
@@ -164,7 +164,7 @@ exports.deleteOne = function (request, response) {
     const getBillsForUserResolve = (bills) => {
         if (bills.length == 0) {
             response.status(404);
-            response.json(bills);
+            response.json({ message: "Bill not found" });
         } else if (bills[0].owner_id != requestedUser.id) {
             response.status(401);
             response.json({ message: "UnAuthorized" });

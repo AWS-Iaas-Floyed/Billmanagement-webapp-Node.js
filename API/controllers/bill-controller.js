@@ -12,16 +12,14 @@ exports.get = function (request, response) {
     const getBillsForUserResolve = (bills) => {
         response.status(200);
 
-        bills.forEach(function(part, index) {
-            this[index].categories = this[index].categories.split(", ");
-          }, bills); 
+        billService.formatFileInfoInBill(bills);
 
         response.json(bills);
     };
 
 
     const credentialResolve = () => {
-        billService.getBillsForUser(request, response, requestedUser)
+        billService.getBillsWithFilesForUser(request, response, requestedUser)
             .then(getBillsForUserResolve)
             .catch(renderErrorResponse(response, 500));
     }
@@ -41,26 +39,24 @@ exports.get = function (request, response) {
  */
 exports.getOne = function (request, response) {
 
-    let requestedUser;
+    let requestedUser;  
 
     const getBillsForUserResolve = (bills) => {
         if (bills.length == 0) {
             response.status(404);
-            response.json(bills);
+            response.json({ message: "Bill not found" });
         } else if (bills[0].owner_id != requestedUser.id) {
             response.status(401);
             response.json({ message: "UnAuthorized" });
         } else {
             response.status(200);
-            bills.forEach(function(part, index) {
-                this[index].categories = this[index].categories.split(", ");
-              }, bills); 
+            billService.formatFileInfoInBill(bills);
             response.json(bills);
         }
     };
 
     const validateGetOneResolve = () => {
-        billService.getOneBillForUser(request, response, requestedUser)
+        billService.getBillWithFile(request, response, requestedUser)
             .then(getBillsForUserResolve)
             .catch(renderErrorResponse(response, 500));
     }
@@ -83,7 +79,7 @@ exports.getOne = function (request, response) {
 
 
 /**
- * Creating a new User
+ * Creating a new Bill
  */
 exports.post = function (request, response) {
 
@@ -91,7 +87,7 @@ exports.post = function (request, response) {
 
     const resolve = (bill) => {
         response.status(201);
-        bill.categories = bill.categories.split(", ");
+        billService.formatSingleBill(bill.dataValues);
         response.json(bill);
     };
 

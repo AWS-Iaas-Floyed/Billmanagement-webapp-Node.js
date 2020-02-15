@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 const db = require('../config/database');
-const Bill = require('./bill');
+const bill = require('./bill');
 
 const file = db.define('file', {
     id: {
@@ -18,18 +18,23 @@ const file = db.define('file', {
     upload_date: {
         type: Sequelize.STRING
     },
-    bill_id: {
-        type: Sequelize.STRING
-    },
     owner_id: {
         type: Sequelize.STRING
+    },
+    file_size: {
+        type: Sequelize.STRING
+    },
+    encoding: {
+        type: Sequelize.STRING   
     }
+
 }, {
     freezeTableName: true,
     timestamps: false
-},
-);
+});
 
 module.exports = file;
+
+
 
 
