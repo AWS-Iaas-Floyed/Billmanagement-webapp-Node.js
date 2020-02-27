@@ -15,15 +15,15 @@ exports.fileCreateValidator = function (request, response, file) {
         return Promise.reject();
     }
 
-    if(!request.file) {
+    if (!request.file) {
         response.status(400);
         response.json({ message: "File does not exist in request" });
-        
+
         return Promise.reject();
     }
 
 
-    if (!allowedFileTypes.includes(request.file.contentType) 
+    if (!allowedFileTypes.includes(request.file.contentType)
         && !allowedFileTypes.includes(request.file.mimetype)) {
 
         response.status(400);
@@ -32,7 +32,7 @@ exports.fileCreateValidator = function (request, response, file) {
         return Promise.reject();
     }
 
-    return Promise.resolve();    
+    return Promise.resolve();
 }
 
 /**
@@ -43,7 +43,13 @@ exports.save = function (request, response, requestedBill, requestedUser) {
     console.log("File name :" + request.file.destination);
 
     let fileName = request.file.filename;
-    let url = request.file.destination + fileName;
+    let url;
+
+    if (process.env.APPLICATION_ENV == 'prod') {
+        url = request.file.location;
+    } else {
+        url = request.file.destination + fileName;
+    }
 
     console.log(request.file);
 
@@ -60,9 +66,22 @@ exports.save = function (request, response, requestedBill, requestedUser) {
     return promise;
 };
 
+
 exports.deleteAttachment = function (requestedFile) {
-    fs.unlinkSync(requestedFile.url);
+
+    if (process.env.APPLICATION_ENV == undefined || process.env.APPLICATION_ENV == null) {
+        if (requestedFile.url != undefined && requestedFile.url != null && requestedFile.url != "0") {
+            fs.unlinkSync(requestedFile.url, (err) => {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+            });
+
+        }
+    }
 }
+
 
 exports.deleteOne = function (request, response, requestedUser) {
     return File.destroy({

@@ -2,10 +2,15 @@
 let multer = require('multer');
 var path = require('path');
 const multerS3 = require('multer-s3');
+const aws = require('aws-sdk');
 
 const bucket = process.env.S3_BUCKET_ADDRESS;
 
+let s3 = new aws.S3();
+
 let upload;
+
+aws.config.update({region: 'us-east-1'});
 
 if(process.env.APPLICATION_ENV == 'prod'){
 
