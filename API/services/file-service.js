@@ -77,7 +77,6 @@ exports.deleteAttachment = function (requestedFile) {
                     return;
                 }
             });
-
         }
     }
 }
