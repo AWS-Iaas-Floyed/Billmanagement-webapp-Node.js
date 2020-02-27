@@ -7,7 +7,7 @@ const bucket = process.env.S3_BUCKET_ADDRESS;
 
 let upload;
 
-if(process.env.NODE_ENV == 'prod'){
+if(process.env.APPLICATION_ENV == 'prod'){
 
     upload = multer({
         storage: multerS3({
