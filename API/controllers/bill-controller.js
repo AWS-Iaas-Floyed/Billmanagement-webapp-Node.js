@@ -1,5 +1,6 @@
 const billService = require('../services/bill-service');
 const userService = require('../services/user-service');
+const fileService = require('../services/file-service');
 
 
 /**
@@ -165,16 +166,26 @@ exports.put = function (request, response) {
 
 exports.deleteOne = function (request, response) {
 
-    let requestedUser;
+    let requestedUser, requestedFile;
 
     const resolve = () => {
         response.status(204);
         response.json({});
     };
 
-    const resolveBillUpdateValidator = () => {
+    const resolveBillUpdateValidator = (file) => {
+
+        if(file.length > 0)
+            fileService.deleteAttachment(file[0]);
+
         billService.delete(request, response, requestedUser)
             .then(resolve)
+            .catch(renderErrorResponse(response, 500));
+    }
+
+    const getFile = (bill) => {
+        fileService.getFileForBillId(bill.id)
+            .then(resolveBillUpdateValidator)
             .catch(renderErrorResponse(response, 500));
     }
 
@@ -188,7 +199,7 @@ exports.deleteOne = function (request, response) {
             response.status(401);
             response.json({ message: "UnAuthorized" });
         } else {
-            resolveBillUpdateValidator();
+            getFile(bills[0]);
         }
     };
 

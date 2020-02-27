@@ -127,7 +127,7 @@ exports.getOne = function (request, response) {
 exports.deleteOne = function (request, response) {
 
  
-    let requestedUser, requestedBill;
+    let requestedUser, requestedBill, requestedFile;
 
     const resolve = () => {
         response.status(204);
@@ -135,6 +135,9 @@ exports.deleteOne = function (request, response) {
     };
 
     const deleteFile = () => {
+
+        fileService.deleteAttachment(requestedFile);
+
         fileService.deleteOne(request, response)
             .then(resolve)
             .catch(renderErrorResponse(response, 500));
@@ -151,12 +154,13 @@ exports.deleteOne = function (request, response) {
             response.status(400);
             response.json({ message: "Invalid file" });
         }  else {
+            requestedFile = file[0];
             deleteFile();
         }
     };
 
     const getFile = () => {
-        fileService.getOneFile(request, response)
+        fileService.getFileForBillId(requestedBill.id)
             .then(validateFileAndBill)
             .catch(renderErrorResponse(response, 500));
     }

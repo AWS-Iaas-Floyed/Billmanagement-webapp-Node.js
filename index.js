@@ -6,9 +6,19 @@ let bodyParser = require('body-parser');
 
 const db = require('./API/config/database');
 
-db.authenticate()
-    .then(() => console.log('Connected to the MySQl database!'))
-    .catch(err =>  console.log('error: '+err))
+const emptydb = require('./API/config/database-initializer');
+
+emptydb.query("CREATE DATABASE IF NOT EXISTS billmanagement;")
+    .then(data => {
+        db.sync({ alter: true })
+            .then(() => {
+                console.log("DB & Tables synced!")
+
+                db.authenticate()
+                    .then(() => console.log('Connected to the MySQl database!'))
+                    .catch(err => console.log('error: ' + err))
+            })
+    });
 
 
 //startign express

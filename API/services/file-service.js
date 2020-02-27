@@ -1,6 +1,8 @@
 'use strict';
 
 const File = require('../models/file');
+const fs = require('fs')
+
 
 let allowedFileTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
 
@@ -58,7 +60,9 @@ exports.save = function (request, response, requestedBill, requestedUser) {
     return promise;
 };
 
-
+exports.deleteAttachment = function (requestedFile) {
+    fs.unlinkSync(requestedFile.url);
+}
 
 exports.deleteOne = function (request, response, requestedUser) {
     return File.destroy({
@@ -93,6 +97,14 @@ exports.getFileForBill = function (request, response) {
     return File.findAll({
         where: {
             billId: request.params.billId
+        }
+    });
+}
+
+exports.getFileForBillId = function (id) {
+    return File.findAll({
+        where: {
+            billId: id
         }
     });
 }
