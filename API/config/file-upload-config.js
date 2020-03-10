@@ -4,7 +4,7 @@ var path = require('path');
 const multerS3 = require('multer-s3');
 const aws = require('aws-sdk');
 
-const bucket = process.env.S3_BUCKET_ADDRESS;
+const bucket = process.env.S3_BUCKET_ADDRESS.substring(0, process.env.S3_BUCKET_ADDRESS.indexOf(".s3.amazonaws.com"));
 
 let s3 = new aws.S3();
 
