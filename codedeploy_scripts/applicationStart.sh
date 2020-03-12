@@ -1,2 +1,2 @@
-cd home/ubuntu/webapp
+npm install
 node index.js
