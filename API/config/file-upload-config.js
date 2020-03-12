@@ -4,8 +4,6 @@ var path = require('path');
 const multerS3 = require('multer-s3');
 const aws = require('aws-sdk');
 
-const bucket = process.env.S3_BUCKET_ADDRESS.substring(0, process.env.S3_BUCKET_ADDRESS.indexOf(".s3.amazonaws.com"));
-
 let s3 = new aws.S3();
 
 let upload;
@@ -13,6 +11,7 @@ let upload;
 aws.config.update({region: 'us-east-1'});
 
 if(process.env.APPLICATION_ENV == 'prod'){
+    const bucket = process.env.S3_BUCKET_ADDRESS.substring(0, process.env.S3_BUCKET_ADDRESS.indexOf(".s3.amazonaws.com"));
 
     upload = multer({
         storage: multerS3({
@@ -24,13 +23,6 @@ if(process.env.APPLICATION_ENV == 'prod'){
                 cb(null, Date.now() + path.extname(file.originalname));
             }
         })
-        // ,
-        // fileFilter: function (req, file, cb) {
-        //     if (file.mimetype == 'image/png' || file.mimetype == 'image/jpg' || file.mimetype == 'image/jpeg')
-        //         return cb(null, true);
-        //     else
-        //         return cb(new Error('Unsupported File Format'), false);
-        // }
     });
 
 } else {
