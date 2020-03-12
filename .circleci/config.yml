@@ -59,12 +59,12 @@ jobs:
       - run:
           name: Upload Artifact to S3
           command: |
-            aws s3 cp codedeploy_artifact/csye6225-web-app-123.zip s3://codedeploy.floyed-pinto.me/deployments
+            aws s3 cp codedeploy_artifact/csye6225-web-app-123.zip s3://${S3_BUCKET_ADDR}/deployments/csye6225-web-app-123.zip
       - run:
           name: Make CodeDeploy API call
           command: |
-            aws deploy register-application-revision --application-name csye6225-webapp --s3-location bucket=arn:aws:s3:::codedeploy.floyed-pinto.me,bundleType=zip,key=deployments/csye6225-web-app-123.zip
-            aws deploy create-deployment --application-name csye6225-webapp --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name csye6225-webapp-deployment --s3-location bucket=s3://arn:aws:s3:::codedeploy.floyed-pinto.me ,bundleType=zip,key=deployments/csye6225-web-app-123.zip
+            aws deploy register-application-revision --application-name csye6225-webapp --s3-location bucket=${S3_BUCKET_ADDR},bundleType=zip,key=deployments/csye6225-web-app-123.zip
+            aws deploy create-deployment --application-name csye6225-webapp --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name csye6225-webapp-deployment --s3-location bucket=${S3_BUCKET_ADDR},bundleType=zip,key=deployments/csye6225-web-app-123.zip
 
 
 
