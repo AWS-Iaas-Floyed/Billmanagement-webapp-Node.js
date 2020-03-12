@@ -44,7 +44,7 @@ jobs:
             pwd
             ls -al
             mkdir -p codedeploy_artifact
-            cp infrastructure/aws/codedeploy/*.sh .
+            cp codedeploy_scripts/*.sh .
             cp webapp/cloudwatch-agent-config.json .
             zip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip webapp *.sh *.yml *.json
             ls -al
