@@ -39,15 +39,15 @@ jobs:
       - run:
           name: Zip Artifact
           command: |
-            echo "Hello the current build number is ${CIRCLE_BUILD_NUM}"
+            echo "Hello the current build number is 123"
             aws configure set default.region us-east-1
             pwd
             ls -al
             mkdir -p codedeploy_artifact
             cp codedeploy_scripts/*.sh .
-            zip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip webapp *.sh *.yml *.json
+            zip -r csye6225-web-app-123.zip webapp *.sh *.yml *.json
             ls -al
-            mv csye6225-web-app-${CIRCLE_BUILD_NUM}.zip codedeploy_artifact/
+            mv csye6225-web-app-123.zip codedeploy_artifact/
             ls -al
             pwd
             cd codedeploy_artifact
@@ -59,12 +59,12 @@ jobs:
       - run:
           name: Upload Artifact to S3
           command: |
-            aws s3 cp codedeploy_artifact/csye6225-web-app-${CIRCLE_BUILD_NUM}.zip s3://${S3_BUCKET_ADDR}/deployments/csye6225-web-app-${CIRCLE_BUILD_NUM}.zip
+            aws s3 cp codedeploy_artifact/csye6225-web-app-123.zip s3://arn:aws:s3:::codedeploy.floyed-pinto.me/deployments/csye6225-web-app-123.zip
       - run:
           name: Make CodeDeploy API call
           command: |
-            aws deploy register-application-revision --application-name csye6225-webapp --s3-location bucket=${S3_BUCKET_ADDR},bundleType=zip,key=deployments/csye6225-web-app-${CIRCLE_BUILD_NUM}.zip
-            aws deploy create-deployment --application-name csye6225-webapp --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name csye6225-webapp-deployment --s3-location bucket=${S3_BUCKET_ADDR},bundleType=zip,key=deployments/csye6225-web-app-${CIRCLE_BUILD_NUM}.zip
+            aws deploy register-application-revision --application-name csye6225-webapp --s3-location bucket=arn:aws:s3:::codedeploy.floyed-pinto.me,bundleType=zip,key=deployments/csye6225-web-app-123.zip
+            aws deploy create-deployment --application-name csye6225-webapp --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name csye6225-webapp-deployment --s3-location bucket=s3://arn:aws:s3:::codedeploy.floyed-pinto.me ,bundleType=zip,key=deployments/csye6225-web-app-123.zip
 
 
 
