@@ -10,4 +10,5 @@ done
 
 cd /home/ubuntu
 runuser -l ubuntu -c 'npm install'
-runuser -l ubuntu -c 'node index.js'
+sudo npm install pm2@latest -g
+runuser -l ubuntu -c 'pm2 start index.js'
