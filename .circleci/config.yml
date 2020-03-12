@@ -59,7 +59,7 @@ jobs:
       - run:
           name: Upload Artifact to S3
           command: |
-            aws s3 cp codedeploy_artifact/csye6225-web-app-123.zip s3://arn:aws:s3:::codedeploy.floyed-pinto.me
+            aws s3 cp codedeploy_artifact/csye6225-web-app-123.zip s3://codedeploy.floyed-pinto.me/deployments
       - run:
           name: Make CodeDeploy API call
           command: |
