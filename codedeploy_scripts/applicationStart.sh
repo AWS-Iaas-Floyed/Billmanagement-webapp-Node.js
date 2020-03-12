@@ -9,5 +9,5 @@ while ! test -f "$FILE"; do
 done
 
 cd /home/ubuntu
-npm install
-node index.js
+sudo npm install
+sudo node index.js
