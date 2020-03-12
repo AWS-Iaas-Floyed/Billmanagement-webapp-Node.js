@@ -1,5 +1,7 @@
 cd /etc/profile.d
 
+env
+
 FILE=userdata.sh
 while ! test -f "$FILE"; do
     sleep 30s
