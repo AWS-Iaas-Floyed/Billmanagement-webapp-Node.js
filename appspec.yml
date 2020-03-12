@@ -16,4 +16,8 @@ hooks:
 
   ApplicationStart:
     - location: ./applicationStart.sh
+<<<<<<< HEAD
       timeout: 300      
+=======
+      timeout: 100      
+>>>>>>> 486952e471b36d31d11c07ebac75125d67bc125e

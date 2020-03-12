@@ -22,6 +22,52 @@ jobs:
       - run:
           name: Starting node test
           command: 'npm test'
+  deploy:
+    docker:
+      - image: circleci/python:2.7-jessie
+    steps:
+      - checkout        
+      - run:
+          name: Update apt-get
+          command: sudo apt-get update
+      - run:
+          name: install wget
+          command: 'sudo apt-get install wget zip unzip'
+      - run:
+          name: aws cli
+          command: sudo pip install awscli
+      - run:
+          name: Zip Artifact
+          command: |
+            echo "Hello the current build number is 123"
+            aws configure set default.region us-east-1
+            pwd
+            ls -al
+            mkdir -p codedeploy_artifact
+            cp codedeploy_scripts/*.sh .
+            zip -r csye6225-web-app-123.zip API *.sh *.yml *.json *.js
+            ls -al
+            mv csye6225-web-app-123.zip codedeploy_artifact/
+            ls -al
+            pwd
+            cd codedeploy_artifact
+            ls -al
+            pwd
+            cd ..
+            pwd
+            ls -al
+      - run:
+          name: Upload Artifact to S3
+          command: |
+            aws s3 cp codedeploy_artifact/csye6225-web-app-123.zip s3://${S3_BUCKET_ADDR}/deployments/csye6225-web-app-123.zip
+      - run:
+          name: Make CodeDeploy API call
+          command: |
+            aws deploy register-application-revision --application-name csye6225-webapp --s3-location bucket=${S3_BUCKET_ADDR},bundleType=zip,key=deployments/csye6225-web-app-123.zip
+            aws deploy create-deployment --application-name csye6225-webapp --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name csye6225-webapp-deployment --s3-location bucket=${S3_BUCKET_ADDR},bundleType=zip,key=deployments/csye6225-web-app-123.zip
+
+
+
 workflows:
   version: 2
   pr-check:
@@ -33,3 +79,7 @@ workflows:
         filters:
           branches:
             only: master
+    - deploy:
+        filters:
+          branches:
+            only: master            
