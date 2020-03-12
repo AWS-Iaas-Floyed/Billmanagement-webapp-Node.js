@@ -33,9 +33,7 @@ jobs:
       - run:
           name: install wget
           command: |
-          sudo apt-get install wget zip unzip   
-          python3 -m venv venv
-          . venv/bin/activate       
+          sudo apt-get install wget zip unzip && python3 -m venv venv && . venv/bin/activate       
       - run:
           name: aws cli
           command: sudo pip install awscli
