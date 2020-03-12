@@ -45,7 +45,7 @@ jobs:
             ls -al
             mkdir -p codedeploy_artifact
             cp codedeploy_scripts/*.sh .
-            zip -r csye6225-web-app-123.zip webapp *.sh *.yml *.json
+            zip -r csye6225-web-app-123.zip webapp
             ls -al
             mv csye6225-web-app-123.zip codedeploy_artifact/
             ls -al
