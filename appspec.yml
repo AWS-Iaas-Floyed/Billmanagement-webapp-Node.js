@@ -1,0 +1,19 @@
+version: 0.0
+os: linux
+
+files:
+  - source: ./
+    destination: /home/ubuntu
+
+hooks:
+  ApplcationStop:
+    - location: ./applicationStop.sh
+      timeout: 300
+
+  AfterInstall:
+    - location: ./afterInstall.sh
+      timeout: 300
+
+  ApplicationStart:
+    - location: ./applicationStart.sh
+      timeout: 300      
