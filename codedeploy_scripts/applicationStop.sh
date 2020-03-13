@@ -1,0 +1,1 @@
+sudo runuser -l ubuntu -c 'pm2 stop index'
