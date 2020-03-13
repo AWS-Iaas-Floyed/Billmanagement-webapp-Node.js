@@ -9,6 +9,7 @@ while ! test -f "$FILE"; do
 done
 
 cd /home/ubuntu
+sudo runuser -l ubuntu -c 'pm2 stop index'
 sudo npm install
 sudo npm install pm2 -g -f
 sudo runuser -l ubuntu -c 'pm2 start index.js'
