@@ -1,7 +1,8 @@
 'use strict';
 
 const File = require('../models/file');
-const fs = require('fs')
+const fs = require('fs');
+const fileConfig = require('../config/file-upload-config');
 
 
 let allowedFileTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
@@ -78,6 +79,25 @@ exports.deleteAttachment = function (requestedFile) {
                 }
             });
         }
+    } else {
+        if (requestedFile.url != undefined && requestedFile.url != null && requestedFile.url != "0") {
+            
+            let params = {
+                Bucket: process.env.S3_BUCKET_ADDRESS,
+                Key: requestedFile.url
+            };
+
+            fileConfig.s3.deleteObject(params, function (err, data) {
+                if (err) {
+                    logger.error(err);
+                    res.status(500).json({
+                        message: "S3 error while deleting image",
+                        error: err
+                    });
+                }
+            });
+        }
+
     }
 }
 
