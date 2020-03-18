@@ -45,4 +45,4 @@ if(process.env.APPLICATION_ENV == 'prod'){
 
 exports.s3 = s3;
 
-module.exports = upload;
+exports.upload = upload;

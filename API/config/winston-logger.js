@@ -39,7 +39,7 @@ var logger = new winston.createLogger({
         new winston.transports.File(options.file),
         new winston.transports.Console(options.console)
     ],
-    exitOnError: false,
+    exitOnError: false
 });
 
 logger.stream = {
