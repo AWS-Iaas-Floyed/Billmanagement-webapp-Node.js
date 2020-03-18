@@ -3,13 +3,20 @@ const billService = require('../services/bill-service');
 
 const userService = require('../services/user-service');
 
+const statsClient = require('statsd-client');
 
+const stats = new statsClient({host: 'localhost', port: 8125});
 
+const logger = require('../config/winston-logger');
 
 /**
  * Creating a new FIle
  */
 exports.post = function (request, response, next) {
+
+    stats.increment('POST File');
+
+    logger.info("POST request for file");
 
     let requestedUser, requestedBill;
 
@@ -71,6 +78,10 @@ exports.post = function (request, response, next) {
  */
 exports.getOne = function (request, response) {
 
+    stats.increment('GET one File');
+
+    logger.info("GET one request for file");
+
     let requestedUser, requestedBill;
 
     const validateFileAndBill = (file) => {
@@ -126,7 +137,10 @@ exports.getOne = function (request, response) {
 
 exports.deleteOne = function (request, response) {
 
+    stats.increment('DELETE one File');
  
+    logger.info("DELETE one request for file");
+
     let requestedUser, requestedBill, requestedFile;
 
     const resolve = () => {

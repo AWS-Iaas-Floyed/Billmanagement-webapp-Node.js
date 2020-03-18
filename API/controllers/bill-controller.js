@@ -2,11 +2,20 @@ const billService = require('../services/bill-service');
 const userService = require('../services/user-service');
 const fileService = require('../services/file-service');
 
+const statsClient = require('statsd-client');
+
+const stats = new statsClient({host: 'localhost', port: 8125});
+
+const logger = require('../config/winston-logger');
 
 /**
  * Listing the bill information
  */
 exports.get = function (request, response) {
+
+    stats.increment('GET Bill');
+
+    logger.info("GET request for bill");
 
     let requestedUser;
 
@@ -39,6 +48,10 @@ exports.get = function (request, response) {
  * Listing the bill information
  */
 exports.getOne = function (request, response) {
+
+    stats.increment('GET One Bill');
+
+    logger.info("GET ONE request for bill");
 
     let requestedUser;  
 
@@ -84,6 +97,10 @@ exports.getOne = function (request, response) {
  */
 exports.post = function (request, response) {
 
+    stats.increment('POST Bill');
+
+    logger.info("POST request for bill");
+
     let requestedUser;
 
     const resolve = (bill) => {
@@ -117,6 +134,10 @@ exports.post = function (request, response) {
  * updating based on id
  */
 exports.put = function (request, response) {
+
+    stats.increment('PUT Bill');
+
+    logger.info("PUT request for bill");
 
     let requestedUser;
 
@@ -165,6 +186,10 @@ exports.put = function (request, response) {
 
 
 exports.deleteOne = function (request, response) {
+
+    stats.increment('DELETE Bill');
+
+    logger.info("DELETE request for bill");
 
     let requestedUser, requestedFile;
 

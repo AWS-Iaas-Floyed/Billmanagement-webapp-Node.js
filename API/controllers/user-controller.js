@@ -1,9 +1,20 @@
 const userService = require('../services/user-service');
 
+const statsClient = require('statsd-client');
+
+const stats = new statsClient({host: 'localhost', port: 8125});
+
+const logger = require('../config/winston-logger');
+
 /**
  * Listing the user information
  */
 exports.get = function (request, response) {
+
+    stats.increment('GET User');
+    
+    logger.info("GET request for user");
+
     const resolve = (user) => {
         response.status(200);
         delete user.dataValues.password;//deleting the password in the response
@@ -21,6 +32,10 @@ exports.get = function (request, response) {
  * Creating a new User
  */
 exports.post = function (request, response) {
+
+    stats.increment('POST User');
+
+    logger.info("POST request for user");
 
     const resolve = (user) => {
         response.status(201);       
@@ -52,6 +67,10 @@ exports.post = function (request, response) {
  * updating based on id
  */
 exports.put = function (request, response) {
+
+    stats.increment('PUT User');
+
+    logger.info("PUT request for user");
 
     const resolve = () => {
         response.status(204);
