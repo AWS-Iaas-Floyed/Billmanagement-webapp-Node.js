@@ -48,7 +48,7 @@ exports.save = function (request, response, requestedBill, requestedUser) {
     let url;
 
     if (process.env.APPLICATION_ENV == 'prod') {
-        url = request.file.location;
+        url = request.file.key;
     } else {
         url = request.file.destination + fileName;
     }
