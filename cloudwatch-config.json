@@ -3,6 +3,7 @@
         "metrics_collection_interval": 10,
         "logfile": "/var/logs/amazon-cloudwatch-agent.log"
     },
+
     "logs": {
         "logs_collected": {
             "files": {
@@ -14,9 +15,9 @@
                     }
                 ]
             }
-        }
+        },
+        "log_stream_name": "cloudwatch_log_stream"
     },
-    "log_stream_name": "cloudwatch_log_stream",
     "metrics": {
         "metrics_collected": {
             "statsd": {
