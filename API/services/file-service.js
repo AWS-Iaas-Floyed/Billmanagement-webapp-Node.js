@@ -83,18 +83,16 @@ exports.deleteAttachment = function (requestedFile) {
     } else {
         if (requestedFile.url != undefined && requestedFile.url != null && requestedFile.url != "0") {
             
+            let x = requestedFile.url;
             let params = {
                 Bucket: process.env.S3_BUCKET_ADDRESS,
-                Key: requestedFile.url
+                    Key: x.substring(x.indexOf("//")+2,x.length)
             };
+
 
             fileConfig.s3.deleteObject(params, function (err, data) {
                 if (err) {
                     logger.error(err);
-                    res.status(500).json({
-                        message: "S3 error while deleting image",
-                        error: err
-                    });
                 }
             });
         }
