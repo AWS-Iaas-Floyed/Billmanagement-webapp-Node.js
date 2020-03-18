@@ -4,6 +4,7 @@ const File = require('../models/file');
 const fs = require('fs');
 const fileConfig = require('../config/file-upload-config');
 
+const logger = require('../config/winston-logger');
 
 let allowedFileTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
 
