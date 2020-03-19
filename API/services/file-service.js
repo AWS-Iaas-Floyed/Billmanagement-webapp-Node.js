@@ -82,7 +82,8 @@ exports.deleteAttachment = function (requestedFile) {
         }
     } else {
         if (requestedFile.url != undefined && requestedFile.url != null && requestedFile.url != "0") {
-            
+            var timer = new Date();
+
             let params = {
                 Bucket: process.env.S3_BUCKET_ADDRESS.substring(0, process.env.S3_BUCKET_ADDRESS.indexOf(".s3.amazonaws.com")),
                 Key: requestedFile.url
@@ -94,6 +95,9 @@ exports.deleteAttachment = function (requestedFile) {
                     logger.error(err);
                 }
             });
+
+            stats.timing('S3 DELETE File Time', timer); 
+
         }
 
     }
