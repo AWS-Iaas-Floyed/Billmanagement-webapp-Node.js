@@ -13,6 +13,8 @@ const logger = require('../config/winston-logger');
  */
 exports.get = function (request, response) {
 
+    var timer = new Date();
+
     stats.increment('GET Bill');
 
     logger.info("GET request for bill");
@@ -25,6 +27,9 @@ exports.get = function (request, response) {
         billService.formatFileInfoInBill(bills);
 
         response.json(bills);
+
+        stats.timing('GET Bill Time', timer); 
+
     };
 
 
@@ -49,6 +54,8 @@ exports.get = function (request, response) {
  */
 exports.getOne = function (request, response) {
 
+    var timer = new Date();
+
     stats.increment('GET One Bill');
 
     logger.info("GET ONE request for bill");
@@ -67,6 +74,9 @@ exports.getOne = function (request, response) {
             billService.formatFileInfoInBill(bills);
             response.json(bills);
         }
+
+        stats.timing('GET One Bill Time', timer); 
+
     };
 
     const validateGetOneResolve = () => {
@@ -97,6 +107,8 @@ exports.getOne = function (request, response) {
  */
 exports.post = function (request, response) {
 
+    var timer = new Date();
+
     stats.increment('POST Bill');
 
     logger.info("POST request for bill");
@@ -107,6 +119,9 @@ exports.post = function (request, response) {
         response.status(201);
         billService.formatSingleBill(bill.dataValues);
         response.json(bill);
+
+        stats.timing('POST Bill Time', timer); 
+
     };
 
     const resolveBillCreateValidator = () => {
@@ -135,6 +150,8 @@ exports.post = function (request, response) {
  */
 exports.put = function (request, response) {
 
+    var timer = new Date();
+
     stats.increment('PUT Bill');
 
     logger.info("PUT request for bill");
@@ -144,6 +161,8 @@ exports.put = function (request, response) {
     const resolve = () => {
         response.status(200);
         response.json({});
+
+        stats.timing('PUT Bill Time', timer);
     };
 
     const resolveBillUpdateValidator = () => {
@@ -187,6 +206,8 @@ exports.put = function (request, response) {
 
 exports.deleteOne = function (request, response) {
 
+    var timer = new Date();
+
     stats.increment('DELETE Bill');
 
     logger.info("DELETE request for bill");
@@ -196,6 +217,8 @@ exports.deleteOne = function (request, response) {
     const resolve = () => {
         response.status(204);
         response.json({});
+
+        stats.timing('DELETE Bill Time', timer);
     };
 
     const resolveBillUpdateValidator = (file) => {
