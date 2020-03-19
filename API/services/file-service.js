@@ -6,6 +6,11 @@ const fileConfig = require('../config/file-upload-config');
 
 const logger = require('../config/winston-logger');
 
+const statsClient = require('statsd-client');
+
+const stats = new statsClient({host: 'localhost', port: 8125});
+
+
 let allowedFileTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
 
 exports.fileCreateValidator = function (request, response, file) {
