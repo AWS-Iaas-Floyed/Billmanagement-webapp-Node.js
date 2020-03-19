@@ -9,7 +9,7 @@ module.exports = function (app) {
     //     .post(fileController.post) //listing the information
 
     app.post('/v1/bill/:billId/file', 
-        fileConfig.single('billFile'),fileController.post)
+        fileConfig.upload.single('billFile'),fileController.post)
 
     // getting all bills
     app.route('/v1/bill/:billId/file/:fileId')

@@ -4,6 +4,7 @@ const File = require('../models/file');
 const fs = require('fs');
 const fileConfig = require('../config/file-upload-config');
 
+const logger = require('../config/winston-logger');
 
 let allowedFileTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
 
@@ -47,7 +48,7 @@ exports.save = function (request, response, requestedBill, requestedUser) {
     let url;
 
     if (process.env.APPLICATION_ENV == 'prod') {
-        url = request.file.location;
+        url = request.file.key;
     } else {
         url = request.file.destination + fileName;
     }
@@ -87,13 +88,10 @@ exports.deleteAttachment = function (requestedFile) {
                 Key: requestedFile.url
             };
 
+
             fileConfig.s3.deleteObject(params, function (err, data) {
                 if (err) {
                     logger.error(err);
-                    res.status(500).json({
-                        message: "S3 error while deleting image",
-                        error: err
-                    });
                 }
             });
         }

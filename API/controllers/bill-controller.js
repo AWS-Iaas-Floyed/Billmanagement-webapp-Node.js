@@ -2,11 +2,22 @@ const billService = require('../services/bill-service');
 const userService = require('../services/user-service');
 const fileService = require('../services/file-service');
 
+const statsClient = require('statsd-client');
+
+const stats = new statsClient({host: 'localhost', port: 8125});
+
+const logger = require('../config/winston-logger');
 
 /**
  * Listing the bill information
  */
 exports.get = function (request, response) {
+
+    var timer = new Date();
+
+    stats.increment('GET Bill');
+
+    logger.info("GET request for bill");
 
     let requestedUser;
 
@@ -16,6 +27,9 @@ exports.get = function (request, response) {
         billService.formatFileInfoInBill(bills);
 
         response.json(bills);
+
+        stats.timing('GET Bill Time', timer); 
+
     };
 
 
@@ -40,6 +54,12 @@ exports.get = function (request, response) {
  */
 exports.getOne = function (request, response) {
 
+    var timer = new Date();
+
+    stats.increment('GET One Bill');
+
+    logger.info("GET ONE request for bill");
+
     let requestedUser;  
 
     const getBillsForUserResolve = (bills) => {
@@ -54,6 +74,9 @@ exports.getOne = function (request, response) {
             billService.formatFileInfoInBill(bills);
             response.json(bills);
         }
+
+        stats.timing('GET One Bill Time', timer); 
+
     };
 
     const validateGetOneResolve = () => {
@@ -84,12 +107,21 @@ exports.getOne = function (request, response) {
  */
 exports.post = function (request, response) {
 
+    var timer = new Date();
+
+    stats.increment('POST Bill');
+
+    logger.info("POST request for bill");
+
     let requestedUser;
 
     const resolve = (bill) => {
         response.status(201);
         billService.formatSingleBill(bill.dataValues);
         response.json(bill);
+
+        stats.timing('POST Bill Time', timer); 
+
     };
 
     const resolveBillCreateValidator = () => {
@@ -118,11 +150,19 @@ exports.post = function (request, response) {
  */
 exports.put = function (request, response) {
 
+    var timer = new Date();
+
+    stats.increment('PUT Bill');
+
+    logger.info("PUT request for bill");
+
     let requestedUser;
 
     const resolve = () => {
         response.status(200);
         response.json({});
+
+        stats.timing('PUT Bill Time', timer);
     };
 
     const resolveBillUpdateValidator = () => {
@@ -166,11 +206,19 @@ exports.put = function (request, response) {
 
 exports.deleteOne = function (request, response) {
 
+    var timer = new Date();
+
+    stats.increment('DELETE Bill');
+
+    logger.info("DELETE request for bill");
+
     let requestedUser, requestedFile;
 
     const resolve = () => {
         response.status(204);
         response.json({});
+
+        stats.timing('DELETE Bill Time', timer);
     };
 
     const resolveBillUpdateValidator = (file) => {

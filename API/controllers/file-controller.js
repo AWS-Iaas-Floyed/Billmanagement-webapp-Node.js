@@ -3,19 +3,31 @@ const billService = require('../services/bill-service');
 
 const userService = require('../services/user-service');
 
+const statsClient = require('statsd-client');
 
+const stats = new statsClient({host: 'localhost', port: 8125});
 
+const logger = require('../config/winston-logger');
 
 /**
  * Creating a new FIle
  */
 exports.post = function (request, response, next) {
+    
+    var timer = new Date();
+
+    stats.increment('POST File');
+
+    logger.info("POST request for file");
 
     let requestedUser, requestedBill;
 
     const resolve = (file) => {
         response.status(201);
         response.json(file);
+
+        stats.timing('POST File Time', timer); 
+
     };
 
     const saveFile = () => {
@@ -71,6 +83,12 @@ exports.post = function (request, response, next) {
  */
 exports.getOne = function (request, response) {
 
+    var timer = new Date();
+
+    stats.increment('GET one File');
+
+    logger.info("GET one request for file");
+
     let requestedUser, requestedBill;
 
     const validateFileAndBill = (file) => {
@@ -87,6 +105,9 @@ exports.getOne = function (request, response) {
             response.status(200);
             response.json(file);
         }
+
+        stats.timing('GET One File Time', timer); 
+
     };
 
     const getFile = () => {
@@ -126,12 +147,20 @@ exports.getOne = function (request, response) {
 
 exports.deleteOne = function (request, response) {
 
+    var timer = new Date();
+
+    stats.increment('DELETE one File');
  
+    logger.info("DELETE one request for file");
+
     let requestedUser, requestedBill, requestedFile;
 
     const resolve = () => {
         response.status(204);
         response.json({});
+
+        stats.timing('DELETE One File Time', timer); 
+
     };
 
     const deleteFile = () => {
