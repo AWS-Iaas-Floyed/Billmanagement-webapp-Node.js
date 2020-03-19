@@ -16,6 +16,8 @@ exports.post = function (request, response, next) {
     
     var timer = new Date();
 
+    var createQueryTime;
+
     stats.increment('POST File');
 
     logger.info("POST request for file");
@@ -23,6 +25,7 @@ exports.post = function (request, response, next) {
     let requestedUser, requestedBill;
 
     const resolve = (file) => {
+        stats.timing('Create File Query Time', createQueryTime); 
         response.status(201);
         response.json(file);
 
@@ -31,7 +34,7 @@ exports.post = function (request, response, next) {
     };
 
     const saveFile = () => {
-
+        createQueryTime = new Date();
         fileService.save(request, response, requestedBill, requestedUser)
             .then(resolve)
             .catch(renderErrorResponse(response, 500));

@@ -108,6 +108,7 @@ exports.getOne = function (request, response) {
 exports.post = function (request, response) {
 
     var timer = new Date();
+    var createQueryTime;
 
     stats.increment('POST Bill');
 
@@ -116,6 +117,8 @@ exports.post = function (request, response) {
     let requestedUser;
 
     const resolve = (bill) => {
+        stats.timing('Create Bill Query Time', createQueryTime); 
+
         response.status(201);
         billService.formatSingleBill(bill.dataValues);
         response.json(bill);
@@ -125,6 +128,7 @@ exports.post = function (request, response) {
     };
 
     const resolveBillCreateValidator = () => {
+        createQueryTime = new Date();
         billService.save(request, response, requestedUser)
             .then(resolve)
             .catch(renderErrorResponse(response, 500));

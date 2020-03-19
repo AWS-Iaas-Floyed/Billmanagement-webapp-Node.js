@@ -38,11 +38,16 @@ exports.post = function (request, response) {
 
     var timer = new Date();
 
+    var createQueryTime;
+
     stats.increment('POST User');
 
     logger.info("POST request for user");
 
     const resolve = (user) => {
+
+        stats.timing('Create User Query Time', createQueryTime); 
+
         response.status(201);       
         delete user.dataValues.password;//deleting the password in the response
         response.json(user);
@@ -51,6 +56,8 @@ exports.post = function (request, response) {
     };
 
     const resolveSave = () => {
+        createQueryTime = new Date();
+
         userService.save(request, response)
             .then(resolve)
             .catch(renderErrorResponse(response, 500));

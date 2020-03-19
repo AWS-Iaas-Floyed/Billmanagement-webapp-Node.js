@@ -84,7 +84,7 @@ exports.deleteAttachment = function (requestedFile) {
         if (requestedFile.url != undefined && requestedFile.url != null && requestedFile.url != "0") {
             
             let params = {
-                Bucket: process.env.S3_BUCKET_ADDRESS,
+                Bucket: process.env.S3_BUCKET_ADDRESS.substring(0, process.env.S3_BUCKET_ADDRESS.indexOf(".s3.amazonaws.com")),
                 Key: requestedFile.url
             };
 
