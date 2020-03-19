@@ -5,6 +5,9 @@ module.exports = function (app) {
         .get(userController.get) //listing the information
         .put(userController.put); //Modifying an existing User
 
+    app.route('/v2/user/self') //all paths with /vi/user/self
+        .get(userController.get) //listing the information
+
     // based on id 
     app.route('/v1/user') //all paths for /vi/user/self along with id
         .post(userController.post); //creating a new user through post request
