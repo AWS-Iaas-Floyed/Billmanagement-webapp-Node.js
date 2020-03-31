@@ -7,6 +7,9 @@ const logger = require('../config/winston-logger');
 
 exports.snsSendBills = function(bills, emailAddress){
     
+    logger.info("Sending the following bills :: "+bills 
+    + " to email :: "+ emailAddress);
+
     let paramsTopic = {
         Name: 'BillDueEmailTopic'
     };
