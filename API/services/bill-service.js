@@ -6,6 +6,8 @@ const db = require('../config/database');
 
 const File = require('../models/file');
 
+const logger = require('../config/winston-logger');
+
 
 /**
  * Saving the new User
@@ -159,7 +161,7 @@ exports.getBillWithFile = function (request, response, requestedUser) {
 }
 
 let formatBill = (current) => {
-    
+
     current.attachments = {};
 
     if (current.file_name && current.file_name != undefined && current.file_name != null) {
@@ -197,6 +199,29 @@ exports.formatFileInfoInBill = function (bills) {
     }, bills);
 }
 
+exports.filterBillsForEmail = function (bills, request) {
+
+    let days = request.params.days;
+
+    var index = bills.length;
+
+    while (index--) {
+        
+        let dueInDays = getDueDays(bills[index].due_date);
+
+        logger.info("Bill is due on " + bills[index].due_date + " which is in " +
+            + dueInDays
+            + " days.");
+
+        if ((dueInDays > 0 && dueInDays > days ) || dueInDays < 0 ) {
+            bills.splice(index, 1);
+        }
+    }
+}
+
+var getDueDays = function (d1) {
+    return (new Date(d1).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24);
+};
 
 exports.validateGetOne = function () {
 
