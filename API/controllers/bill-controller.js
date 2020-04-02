@@ -8,7 +8,7 @@ const stats = new statsClient({ host: 'localhost', port: 8125 });
 
 const logger = require('../config/winston-logger');
 
-const awsServices = require('../services/aws-services');
+const awsServices = require('../services/aws-service');
 /**
  * Listing the bill information
  */
