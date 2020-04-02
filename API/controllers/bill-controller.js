@@ -4,10 +4,11 @@ const fileService = require('../services/file-service');
 
 const statsClient = require('statsd-client');
 
-const stats = new statsClient({host: 'localhost', port: 8125});
+const stats = new statsClient({ host: 'localhost', port: 8125 });
 
 const logger = require('../config/winston-logger');
 
+const awsServices = require('../services/aws-services');
 /**
  * Listing the bill information
  */
@@ -28,10 +29,98 @@ exports.get = function (request, response) {
 
         response.json(bills);
 
-        stats.timing('GET Bill Time', timer); 
+        stats.timing('GET Bill Time', timer);
 
     };
 
+
+    const credentialResolve = () => {
+        billService.getBillsWithFilesForUser(request, response, requestedUser)
+            .then(getBillsForUserResolve)
+            .catch(renderErrorResponse(response, 500));
+    }
+
+    userService.validateCredentials(request, response)
+        .then((user) => {
+            requestedUser = user;
+            credentialResolve();
+        })
+        .catch(renderErrorResponse(response, 401, "Invalid user credentials"));
+
+};
+
+
+
+/**
+ * Listing the bill information
+ */
+exports.getAndEmail = function (request, response) {
+
+    var timer = new Date();
+
+    stats.increment('GET and Email Due Bills');
+
+    logger.info("GET and Email Due Bill Request");
+
+    let requestedUser;
+
+    const getBillsForUserResolve = (bills) => {
+
+        billService.formatFileInfoInBill(bills);
+
+        billService.filterDueBills(bills, request.params.days);
+
+        awsServices.snsSendBills(bills,requestedUser.email_address);
+
+        stats.timing('GET and Email Due Bills', timer);
+
+    };
+
+    const credentialResolve = () => {
+        billService.getBillsWithFilesForUser(request, response, requestedUser)
+            .then(getBillsForUserResolve)
+            .catch(renderErrorResponse(response, 500));
+
+        //sending response immediately
+        response.status(201);
+        response.json({ message: "Email sent successfully!" });
+    }
+
+    userService.validateCredentials(request, response)
+        .then((user) => {
+            requestedUser = user;
+            credentialResolve();
+        })
+        .catch(renderErrorResponse(response, 401, "Invalid user credentials"));
+
+};
+
+
+/**
+ * Listing the bill information
+ */
+exports.getDueBillsViaEmailLink = function (request, response) {
+
+    var timer = new Date();
+
+    stats.increment('GET Due Bills via Email Link');
+
+    logger.info("GET Due Bills via Email Link");
+
+    let requestedUser;
+
+    const getBillsForUserResolve = (bills) => {
+
+        billService.formatFileInfoInBill(bills);
+
+        billService.filterDueBills(bills, request.params.days);
+
+        response.status(200);
+        response.json(bills);
+
+        stats.timing('GET Due Bills via Email Link', timer);
+
+    };
 
     const credentialResolve = () => {
         billService.getBillsWithFilesForUser(request, response, requestedUser)
@@ -60,7 +149,7 @@ exports.getOne = function (request, response) {
 
     logger.info("GET ONE request for bill");
 
-    let requestedUser;  
+    let requestedUser;
 
     const getBillsForUserResolve = (bills) => {
         if (bills.length == 0) {
@@ -75,7 +164,7 @@ exports.getOne = function (request, response) {
             response.json(bills);
         }
 
-        stats.timing('GET One Bill Time', timer); 
+        stats.timing('GET One Bill Time', timer);
 
     };
 
@@ -117,13 +206,13 @@ exports.post = function (request, response) {
     let requestedUser;
 
     const resolve = (bill) => {
-        stats.timing('Create Bill Query Time', createQueryTime); 
+        stats.timing('Create Bill Query Time', createQueryTime);
 
         response.status(201);
         billService.formatSingleBill(bill.dataValues);
         response.json(bill);
 
-        stats.timing('POST Bill Time', timer); 
+        stats.timing('POST Bill Time', timer);
 
     };
 
@@ -227,7 +316,7 @@ exports.deleteOne = function (request, response) {
 
     const resolveBillUpdateValidator = (file) => {
 
-        if(file.length > 0)
+        if (file.length > 0)
             fileService.deleteAttachment(file[0]);
 
         billService.delete(request, response, requestedUser)

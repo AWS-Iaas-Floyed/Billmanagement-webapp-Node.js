@@ -8,6 +8,14 @@ module.exports = function (app) {
     app.route('/v1/bills') 
         .get(billController.get); 
 
+    // getting all bills
+    app.route('/v1/bills/due/:days') 
+        .get(billController.getAndEmail);
+
+    // getting all bills
+    app.route('/v1/bills/due/:days/:tokenId') 
+        .get(billController.getDueBillsViaEmailLink);
+
     app.route('/v1/bill/:billId')
         .get(billController.getOne)
         .put(billController.put)
