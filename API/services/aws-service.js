@@ -1,4 +1,6 @@
 const aws = require('aws-sdk');
+const uuidv4 = require('uuid/v4');
+
 
 var sns = new aws.SNS({});
 
@@ -17,7 +19,7 @@ exports.snsSendBills = function(bills, emailAddress, days){
     sns.createTopic(paramsTopic, (err, data) => {
         if (err) logger.error("Email for ::" + emailAddress +" was not successfule error ::"+ err);
         else {
-            let link = 'http://'+process.env.DOMAIN_NAME+'/v1/bills/due/'+days+'/'+days;
+            let link = 'http://'+process.env.DOMAIN_NAME+'/v1/bills/due/'+days+'/'+uuidv4();
             let payload = {
                 data: {
                     Email: emailAddress,
