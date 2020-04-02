@@ -58,9 +58,9 @@ exports.getAndEmail = function (request, response) {
 
     var timer = new Date();
 
-    stats.increment('GET and Email Bill');
+    stats.increment('GET and Email Due Bills');
 
-    logger.info("GET request for bill");
+    logger.info("GET and Email Due Bill Request");
 
     let requestedUser;
 
@@ -68,14 +68,57 @@ exports.getAndEmail = function (request, response) {
 
         billService.formatFileInfoInBill(bills);
 
-        billService.filterBillsForEmail(bills, request);
+        billService.filterDueBills(bills, request.params.days);
 
         awsServices.snsSendBills(bills,requestedUser.email_address);
 
+        stats.timing('GET and Email Due Bills', timer);
+
+    };
+
+    const credentialResolve = () => {
+        billService.getBillsWithFilesForUser(request, response, requestedUser)
+            .then(getBillsForUserResolve)
+            .catch(renderErrorResponse(response, 500));
+
+        //sending response immediately
         response.status(201);
         response.json({ message: "Email sent successfully!" });
+    }
 
-        stats.timing('GET Bill Time', timer);
+    userService.validateCredentials(request, response)
+        .then((user) => {
+            requestedUser = user;
+            credentialResolve();
+        })
+        .catch(renderErrorResponse(response, 401, "Invalid user credentials"));
+
+};
+
+
+/**
+ * Listing the bill information
+ */
+exports.getDueBillsViaEmailLink = function (request, response) {
+
+    var timer = new Date();
+
+    stats.increment('GET Due Bills via Email Link');
+
+    logger.info("GET Due Bills via Email Link");
+
+    let requestedUser;
+
+    const getBillsForUserResolve = (bills) => {
+
+        billService.formatFileInfoInBill(bills);
+
+        billService.filterDueBills(bills, request.params.days);
+
+        response.status(200);
+        response.json(bills);
+
+        stats.timing('GET Due Bills via Email Link', timer);
 
     };
 

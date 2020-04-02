@@ -199,9 +199,7 @@ exports.formatFileInfoInBill = function (bills) {
     }, bills);
 }
 
-exports.filterBillsForEmail = function (bills, request) {
-
-    let days = request.params.days;
+exports.filterDueBills = function (bills, days) {
 
     var index = bills.length;
 
