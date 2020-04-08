@@ -3,7 +3,7 @@ const uuidv4 = require('uuid/v4');
 
 
 var sns = new aws.SNS({});
-var sqs = new aws.SQS();
+var sqs = new aws.SQS({apiVersion: '2012-11-05'});
 
 const logger = require('../config/winston-logger');
 
