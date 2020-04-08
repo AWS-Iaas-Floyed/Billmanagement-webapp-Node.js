@@ -91,8 +91,6 @@ exports.receiveFromSQS = function () {
     });
 }
 
-this.receiveFromSQS();
-
 exports.sendToSQS = function (emailAddress, days) {
 
     var params = {
@@ -132,6 +130,8 @@ exports.sendToSQS = function (emailAddress, days) {
                     logger.error("Error while sending message to Email Queue", err);
                 } else {
                     logger.info("Success while sending message id to Email Queue :: ", data);
+
+                    this.receiveFromSQS();
                 }
             });
 
