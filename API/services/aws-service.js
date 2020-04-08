@@ -91,7 +91,7 @@ exports.receiveFromSQS = function () {
     });
 }
 
-receiveFromSQS();
+this.receiveFromSQS();
 
 exports.sendToSQS = function (emailAddress, days) {
 
