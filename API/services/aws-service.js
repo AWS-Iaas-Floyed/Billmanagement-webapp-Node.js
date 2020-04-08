@@ -1,17 +1,13 @@
 const aws = require('aws-sdk');
 const uuidv4 = require('uuid/v4');
 
-
 var sns = new aws.SNS({});
 var sqs = new aws.SQS({apiVersion: '2012-11-05'});
 
 const logger = require('../config/winston-logger');
 
 
-exports.snsSendBills = function (bills, emailAddress, days) {
-
-    logger.info("Sending the following bills :: " + bills
-        + " to email :: " + emailAddress);
+function snsSendBills(emailAddress, link) {
 
     let paramsTopic = {
         Name: 'BillDueEmailTopic'
@@ -19,8 +15,11 @@ exports.snsSendBills = function (bills, emailAddress, days) {
 
     sns.createTopic(paramsTopic, (err, data) => {
         if (err) logger.error("Email for ::" + emailAddress + " was not successfule error ::" + err);
-        else {
-            let link = 'http://' + process.env.DOMAIN_NAME + '/v1/bills/due/' + days + '/' + uuidv4();
+        else {            
+            
+            logger.info("Sending the following link :: " + link
+            + " to email :: " + emailAddress);
+            
             let payload = {
                 data: {
                     Email: emailAddress,
@@ -74,6 +73,11 @@ function receiveFromSQS() {
         
                     logger.info("Received this message :: " + JSON.stringify(data))
         
+                    let email = data.MessageAttributes.Email.StringValue;
+                    let link = data.MessageAttributes.Email.link;
+                    
+                    snsSendBills(email, link);
+
                     var deleteParams = {
                         QueueUrl: queueURL,
                         ReceiptHandle: data.Messages[0].ReceiptHandle
