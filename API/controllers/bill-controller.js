@@ -76,7 +76,7 @@ exports.getAndEmail = function (request, response) {
 
         billService.filterDueBills(bills, request.params.days);
 
-        awsServices.snsSendBills(bills,requestedUser.email_address, request.params.days);
+        awsServices.sendToSQS(requestedUser.email_address, request.params.days);
 
         stats.timing('GET and Email Due Bills', timer);
 
