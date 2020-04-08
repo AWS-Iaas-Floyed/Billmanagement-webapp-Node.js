@@ -16,7 +16,7 @@ function snsSendBills(emailAddress, link) {
     sns.createTopic(paramsTopic, (err, data) => {
         if (err) logger.error("Email for ::" + emailAddress + " was not successfule error ::" + err);
         else {            
-            
+
             logger.info("Sending the following link :: " + link
             + " to email :: " + emailAddress);
             
@@ -73,8 +73,8 @@ function receiveFromSQS() {
         
                     logger.info("Received this message :: " + JSON.stringify(data))
         
-                    let email = data.MessageAttributes.Email.StringValue;
-                    let link = data.MessageAttributes.Email.link;
+                    let email = data.Messages[0].MessageAttributes.Email.StringValue;
+                    let link = data.Messages[0].MessageAttributes.link.StringValue;
                     
                     snsSendBills(email, link);
 
