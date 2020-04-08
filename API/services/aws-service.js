@@ -47,7 +47,7 @@ exports.snsSendBills = function (bills, emailAddress, days) {
     });
 }
 
-exports.receiveFromSQS = function () {
+function receiveFromSQS() {
 
     var params = {
         QueueName: 'EmailQueue'
@@ -131,7 +131,7 @@ exports.sendToSQS = function (emailAddress, days) {
                 } else {
                     logger.info("Success while sending message id to Email Queue :: ", data);
 
-                    this.receiveFromSQS();
+                    receiveFromSQS();
                 }
             });
 
