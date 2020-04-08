@@ -50,8 +50,7 @@ exports.snsSendBills = function (bills, emailAddress, days) {
 function receiveFromSQS() {
 
     var params = {
-        QueueName: 'EmailQueue',
-        MessageAttributeNames: ["All"]
+        QueueName: 'EmailQueue'
     };
 
     sqs.getQueueUrl(params, function (err, data) {
@@ -64,7 +63,8 @@ function receiveFromSQS() {
             logger.info("Success", data.QueueUrl);
 
             var params = {
-                QueueUrl: queueURL
+                QueueUrl: queueURL,
+                MessageAttributeNames: ["All"]
             };
         
             sqs.receiveMessage(params, function (err, data) {
