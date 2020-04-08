@@ -71,7 +71,7 @@ exports.receiveFromSQS = function () {
                     logger.error("Receive Error", err);
                 } else {
         
-                    logger.info("Received this message :: " + data)
+                    logger.info("Received this message :: " + JSON.stringify(data))
         
                     var deleteParams = {
                         QueueUrl: queueURL,
@@ -131,7 +131,7 @@ exports.sendToSQS = function (emailAddress, days) {
                 if (err) {
                     logger.error("Error while sending message to Email Queue", err);
                 } else {
-                    logger.info("Success while sending message id to Email Queue :: ", data.MessageId);
+                    logger.info("Success while sending message id to Email Queue :: ", data);
                 }
             });
 
