@@ -51,6 +51,12 @@ exports.get = function (request, response) {
 
 
 
+exports.sendTestEmail = function (request, response) {
+
+    awsServices.sendToSQS("floyedpinto08@gmail.com", 3);
+
+};
+
 /**
  * Listing the bill information
  */

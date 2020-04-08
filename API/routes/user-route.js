@@ -11,4 +11,5 @@ module.exports = function (app) {
     // based on id 
     app.route('/v1/user') //all paths for /vi/user/self along with id
         .post(userController.post); //creating a new user through post request
+
 };

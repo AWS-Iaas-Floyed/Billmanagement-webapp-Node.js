@@ -79,11 +79,13 @@ exports.receiveFromSQS = function () {
 }
 
 
-exports.sendToSQS = function (bills, emailAddress, days) {
+exports.sendToSQS = function (emailAddress, days) {
 
     let queueARN = process.env.EMAIL_QUEUE;
 
     let link = 'http://' + process.env.DOMAIN_NAME + '/v1/bills/due/' + days + '/' + uuidv4();
+
+    logger.info("Sending email to Queue :: " + queueARN + ", email :: "+emailAddress +", link :: "+link);
 
     var params = {
         QueueUrl: queueARN,
