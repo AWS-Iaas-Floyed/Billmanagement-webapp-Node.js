@@ -49,65 +49,95 @@ exports.snsSendBills = function (bills, emailAddress, days) {
 
 exports.receiveFromSQS = function () {
 
-    let queueARN = process.env.EMAIL_QUEUE;
-
     var params = {
-        QueueUrl: queueARN
+        QueueName: 'EmailQueue'
     };
 
-    sqs.receiveMessage(params, function (err, data) {
+    sqs.getQueueUrl(params, function (err, data) {
         if (err) {
-            console.log("Receive Error", err);
+            console.log("Error", err);
         } else {
 
-            console.log("Received this message :: " + data)
+            let queueURL = data.QueueUrl;
 
-            var deleteParams = {
-                QueueUrl: queueURL,
-                ReceiptHandle: data.Messages[0].ReceiptHandle
+            console.log("Success", data.QueueUrl);
+
+            var params = {
+                QueueUrl: queueURL
             };
-            sqs.deleteMessage(deleteParams, function (err, data) {
+        
+            sqs.receiveMessage(params, function (err, data) {
                 if (err) {
-                    console.log("Delete Error", err);
+                    console.log("Receive Error", err);
                 } else {
-                    console.log("Message Deleted", data);
+        
+                    console.log("Received this message :: " + data)
+        
+                    var deleteParams = {
+                        QueueUrl: queueURL,
+                        ReceiptHandle: data.Messages[0].ReceiptHandle
+                    };
+                    sqs.deleteMessage(deleteParams, function (err, data) {
+                        if (err) {
+                            console.log("Delete Error", err);
+                        } else {
+                            console.log("Message Deleted", data);
+                        }
+                    });
                 }
             });
+
         }
     });
-
 }
 
+receiveFromSQS();
 
 exports.sendToSQS = function (emailAddress, days) {
 
-    let queueARN = process.env.EMAIL_QUEUE;
-
-    let link = 'http://' + process.env.DOMAIN_NAME + '/v1/bills/due/' + days + '/' + uuidv4();
-
-    logger.info("Sending email to Queue :: " + queueARN + ", email :: "+emailAddress +", link :: "+link);
-
     var params = {
-        QueueUrl: queueARN,
-        MessageAttributes: {
-            "link": {
-                DataType: "String",
-                StringValue: link
-            },
-            "Email": {
-                DataType: "String",
-                StringValue: emailAddress
-            }
-        },
-        MessageBody: 'Message to Email Queue'
+        QueueName: 'EmailQueue'
     };
 
-    sqs.sendMessage(params, function (err, data) {
+    sqs.getQueueUrl(params, function (err, data) {
         if (err) {
-            console.log("Error while sending message to Email Queue", err);
+            console.log("Error", err);
         } else {
-            console.log("Success while sending message id to Email Queue :: ", data.MessageId);
+
+            let queueURL = data.QueueUrl;
+
+            console.log("Success", data.QueueUrl);
+
+            let link = 'http://' + process.env.DOMAIN_NAME + '/v1/bills/due/' + days + '/' + uuidv4();
+
+            logger.info("Sending email to Queue :: " + queueURL + ", email :: " + emailAddress + ", link :: " + link);
+
+            var params = {
+                QueueUrl: queueURL,
+                MessageAttributes: {
+                    "link": {
+                        DataType: "String",
+                        StringValue: link
+                    },
+                    "Email": {
+                        DataType: "String",
+                        StringValue: emailAddress
+                    }
+                },
+                MessageBody: 'Message to Email Queue'
+            };
+
+            sqs.sendMessage(params, function (err, data) {
+                if (err) {
+                    console.log("Error while sending message to Email Queue", err);
+                } else {
+                    console.log("Success while sending message id to Email Queue :: ", data.MessageId);
+                }
+            });
+
         }
     });
+
+
 
 }
