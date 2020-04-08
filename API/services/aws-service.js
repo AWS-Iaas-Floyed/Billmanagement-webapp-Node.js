@@ -55,12 +55,12 @@ exports.receiveFromSQS = function () {
 
     sqs.getQueueUrl(params, function (err, data) {
         if (err) {
-            console.log("Error", err);
+            logger.error("Error", err);
         } else {
 
             let queueURL = data.QueueUrl;
 
-            console.log("Success", data.QueueUrl);
+            logger.info("Success", data.QueueUrl);
 
             var params = {
                 QueueUrl: queueURL
@@ -68,10 +68,10 @@ exports.receiveFromSQS = function () {
         
             sqs.receiveMessage(params, function (err, data) {
                 if (err) {
-                    console.log("Receive Error", err);
+                    logger.error("Receive Error", err);
                 } else {
         
-                    console.log("Received this message :: " + data)
+                    logger.info("Received this message :: " + data)
         
                     var deleteParams = {
                         QueueUrl: queueURL,
@@ -79,9 +79,9 @@ exports.receiveFromSQS = function () {
                     };
                     sqs.deleteMessage(deleteParams, function (err, data) {
                         if (err) {
-                            console.log("Delete Error", err);
+                            logger.error("Delete Error", err);
                         } else {
-                            console.log("Message Deleted", data);
+                            logger.info("Message Deleted", data);
                         }
                     });
                 }
@@ -101,12 +101,12 @@ exports.sendToSQS = function (emailAddress, days) {
 
     sqs.getQueueUrl(params, function (err, data) {
         if (err) {
-            console.log("Error", err);
+            logger.error("Error", err);
         } else {
 
             let queueURL = data.QueueUrl;
 
-            console.log("Success", data.QueueUrl);
+            logger.info("Success", data.QueueUrl);
 
             let link = 'http://' + process.env.DOMAIN_NAME + '/v1/bills/due/' + days + '/' + uuidv4();
 
@@ -129,9 +129,9 @@ exports.sendToSQS = function (emailAddress, days) {
 
             sqs.sendMessage(params, function (err, data) {
                 if (err) {
-                    console.log("Error while sending message to Email Queue", err);
+                    logger.error("Error while sending message to Email Queue", err);
                 } else {
-                    console.log("Success while sending message id to Email Queue :: ", data.MessageId);
+                    logger.info("Success while sending message id to Email Queue :: ", data.MessageId);
                 }
             });
 
