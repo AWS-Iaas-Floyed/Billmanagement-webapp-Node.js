@@ -50,7 +50,8 @@ exports.snsSendBills = function (bills, emailAddress, days) {
 function receiveFromSQS() {
 
     var params = {
-        QueueName: 'EmailQueue'
+        QueueName: 'EmailQueue',
+        MessageAttributeNames: ["All"]
     };
 
     sqs.getQueueUrl(params, function (err, data) {
