@@ -15,6 +15,10 @@ module.exports = function (app) {
     // getting all bills
     app.route('/v1/bills/due/:days/:tokenId') 
         .get(billController.getDueBillsViaEmailLink);
+    
+    // based on id 
+    app.route('/v1/test') //all paths for /vi/user/self along with id
+        .post(billController.sendTestEmail); //creating a new user through post request
 
     app.route('/v1/bill/:billId')
         .get(billController.getOne)
