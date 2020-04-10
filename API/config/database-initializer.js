@@ -1,6 +1,8 @@
 
 const Sequelize = require('sequelize');
 
+const fs = require('fs');
+
 let seq;
 
 console.log("Current environment: " + process.env.APPLICATION_ENV);
