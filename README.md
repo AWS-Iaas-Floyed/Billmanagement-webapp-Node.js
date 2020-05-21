@@ -36,33 +36,15 @@ Follow below steps in order to start the application.
 
 ## Install npm packages
 
-```
-npm i
-```
-
-or
-
-```
-npm install
-```
+`npm i` or `npm install`
 
 ## Run application server
 
-```
-npm start
-```
- 
- or 
- 
-```
-npm run start
-```
+`npm start` or `npm run start`
 
 ## Test the application
 
-```
-npm test
-```
+`npm test`
 
 Port number will be based on the environment variable : EXPRESS_PORT or 3000 by default
 
