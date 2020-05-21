@@ -3,6 +3,13 @@
 A REST api backend service to upload bill and file information. A file is linked to a bill which includes an image.
 Bills can only be uploaded by users which are authenticated using basic auth.
 
+## Features
+
+1. Creation and authentication of users using basic auth
+2. Creating, modifying and deleting bill information.
+3. Attaching a file to a bill. A file is a multipart/form-data which includes a file attachment.
+4. The file is saved to an S3 bucket (address denoted by environment variable `S3_BUCKET_ADDRESS`) if the application is deployed on AWS. On local, it will saved in `uploads/` in the project directory.
+
 ## API Endpoints
 
 User:
